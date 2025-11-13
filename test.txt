@@ -1,2 +1,0 @@
-testing remote connection
-testing 1 2
