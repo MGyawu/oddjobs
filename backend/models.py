@@ -23,7 +23,7 @@ class User(db.Model):
 #Defines Job class that inherents from db.Model
 #Defines the fields that is object will have
 class Job(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    jobid = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     address = db.Column(db.String(100), unique=False, nullable=False)
     description = db.Column(db.String(300), unique=False, nullable=False)
@@ -34,7 +34,7 @@ class Job(db.Model):
     #Converts above fields -> Python Dict -> Json
     def to_json(self):
         return{
-            "id" : self.id,
+            "jobid" : self.id,
             "username" : self.user_name,
             "address" : self.address,
             "description" : self.description,
