@@ -3,10 +3,11 @@ import React from "react";
 const JobList = ({jobs}) =>{
     return <div>
         <h2>Job List</h2>
+        <button>Create New Job</button>
         <table>
             <thead>
                 <tr>
-                    <button>Create New Job</button>
+                    
                 </tr>
             </thead>
             <tbody>

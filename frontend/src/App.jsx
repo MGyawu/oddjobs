@@ -7,18 +7,18 @@ import JobList from './JobList'
 function App() {
   
   //Define state that stores jobs
-  const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState([])//([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
 
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
-    fetchJobs()
+    //fetchJobs()
   }, [])
 
   //Send request to backend to receive list of jobs
   const fetchJobs = async () => {
     const response = await fetch("http://127.0.0.1:5000/jobs")
     const data = await response.json()
-    setJobs(DataTransfer.jobs)
+    setJobs(data.jobs)
     console.log(data.jobs)
   }
 
