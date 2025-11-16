@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
+//import reactLogo from './assets/react.svg'
+//import viteLogo from '/vite.svg'
 import './App.css'
+import JobList from './JobList'
 
 function App() {
-  const [count, setCount] = useState(0)
+  
+  //Define state that stores jobs
+  const [jobs, setJobs] = useState([])//([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  //Calls fetchJobs() whenever the page renders
+  useEffect(() => {
+    //fetchJobs()
+  }, [])
+
+  //Send request to backend to receive list of jobs
+  const fetchJobs = async () => {
+    const response = await fetch("http://127.0.0.1:5000/jobs")
+    const data = await response.json()
+    setJobs(data.jobs)
+    console.log(data.jobs)
+  }
+
+  return <JobList jobs={jobs} />
 }
 
 export default App
