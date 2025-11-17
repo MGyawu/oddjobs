@@ -16,3 +16,10 @@ def test_app():
 @pytest.fixture()
 def client(app):
     return app.test_client()
+
+#A list of test users
+USERS = [
+    {},
+    {},
+    {}
+]
