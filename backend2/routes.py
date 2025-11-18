@@ -13,18 +13,21 @@ def get_userss():
     return jsonify({"users": json_users})
 
 #Creates a user
-@approutes.route("/create_user", methods=["POST"])
+@approutes.route("/users", methods=["POST"])
 def create_user():
+    #print("request.json: ", request.json)
 
-    userid = uuid4(int)
+
+    userid = str(uuid4())
     user_name = request.json.get("username")
-    password = request.json.get("password")
+    #password = request.json.get("password")
     first_name = request.json.get("firstName")
     last_name = request.json.get("lastName")
     email = request.json.get("email")
 
     #return error message if any of the user entered values are empty
-    if not user_name or not password or not first_name or not last_name or not email:
+    #if not user_name or not password or not first_name or not last_name or not email:
+    if not user_name or not first_name or not last_name or not email:
         return (
             jsonify({"message" : "Important account info missing. Fill all fields"}),
             400,
@@ -33,7 +36,8 @@ def create_user():
     #When adding new user to the database, we create a new user object, add to database session,
     #commit anything in the session.
     #In the event of an error/exception we return the error with a status code of 400
-    new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
+    #new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
+    new_user = User(userid=userid, user_name=user_name, first_name=first_name, last_name=last_name, email=email)
     try:
         db.session.add(new_user)
         db.session.commit()
@@ -53,7 +57,7 @@ def get_jobs():
 #Creating a job
 @approutes.route("/create_job", methods=["POST"])
 def create_job():
-    jobid = uuid4(int)
+    jobid = str(uuid4())
     user_name = request.json.get("username")
     address = request.json.get("address")
     description = request.json.get("description")

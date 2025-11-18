@@ -3,7 +3,8 @@ from extensions import db
 #Defines User class that inherents from db.Model
 #Defines the fields that is object will have
 class User(db.Model):
-    userid = db.Column(db.Integer, primary_key=True)
+    #userid = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     first_name = db.Column(db.String(100), unique=False, nullable=False)
     last_name = db.Column(db.String(100), unique=False, nullable=False)
@@ -23,7 +24,8 @@ class User(db.Model):
 #Defines Job class that inherents from db.Model
 #Defines the fields that is object will have
 class Job(db.Model):
-    jobid = db.Column(db.Integer, primary_key=True)
+    #jobid = db.Column(db.Integer, primary_key=True)
+    jobid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     address = db.Column(db.String(100), unique=False, nullable=False)
     description = db.Column(db.String(300), unique=False, nullable=False)
