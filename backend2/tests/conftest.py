@@ -18,12 +18,3 @@ def app():
 def client(app):
     return app.test_client()
 
-'''
-#A list of test users
-@pytest.fixture
-USERS = [
-    {"id": 1, "username": "JohnUserName", "firstName": "John", "lastName": "Doe", "email": "John.Doe@gmail.com"},
-    {"id": 2, "username": "JaneUserName", "firstName": "Jane", "lastName": "Doe", "email": "Jane.Doe@gmail.com"},
-    {"id": 3, "username": "IsaacUserName", "firstName": "Isaac", "lastName": "Doe", "email": "Isaac.Doe@gmail.com"}
-]
-'''

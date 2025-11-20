@@ -13,7 +13,7 @@ class User(db.Model):
     #Converts above fields -> Python Dict -> Json
     def to_json(self):
         return{
-            "id" : self.id,
+            "id" : self.userid,
             "username" : self.user_name,
             "firstName" : self.first_name,
             "lastName" : self.last_name,
@@ -36,7 +36,7 @@ class Job(db.Model):
     #Converts above fields -> Python Dict -> Json
     def to_json(self):
         return{
-            "jobid" : self.id,
+            "jobid" : self.jobid,
             "username" : self.user_name,
             "address" : self.address,
             "description" : self.description,

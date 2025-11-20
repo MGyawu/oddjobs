@@ -12,6 +12,15 @@ def get_userss():
     json_users = list(map(lambda x: x.to_json(), users))
     return jsonify({"users": json_users})
 
+#Gets a single user from a database
+@approutes.route("/users/<userid>", methods=["GET"])
+def get_user(userid):
+    user = User.query.get(userid)
+
+    if not user: return jsonify({"message": "User not found"}), 404
+
+    return jsonify(user.to_json())
+
 #Creates a user
 @approutes.route("/users", methods=["POST"])
 def create_user():
@@ -55,7 +64,7 @@ def get_jobs():
     return jsonify({"jobs": json_jobs})
 
 #Creating a job
-@approutes.route("/create_job", methods=["POST"])
+@approutes.route("/jobs", methods=["POST"])
 def create_job():
     jobid = str(uuid4())
     user_name = request.json.get("username")
@@ -64,16 +73,16 @@ def create_job():
     fixer_name = request.json.get("fixerName")
     status = request.json.get("status")
 
-    if not address or not description:
+    if not user_name or not address or not description or not status:
         return (
-            jsonify({"message": " You must include an address and description"}),
+            jsonify({"message": "You must include an address and description"}),
             400,
             )
 
     #When adding new job to the database, we create a new job object, add to database session,
     #commit anything in the session.
     #In the event of an error/exception we return the error with a status code of 400
-    new_job = Job(user_name=user_name, address=address, description=description, fixer_name=fixer_name, status=status)
+    new_job = Job(jobid=jobid,user_name=user_name, address=address, description=description, fixer_name=fixer_name, status=status)
     try:
         db.session.add(new_job)
         db.session.commit()
