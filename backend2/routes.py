@@ -63,6 +63,26 @@ def get_jobs():
     json_jobs = list(map(lambda x: x.to_json(), jobs))
     return jsonify({"jobs": json_jobs})
 
+#Get Jobs created by a specific user
+@approutes.route("/jobs/<user_name>")
+def get_jobs_by_user(user_name):
+    jobs = Job.query.filter_by(user_name=user_name).all()
+
+    if not jobs: return jsonify({"message": "Jobs for this user not found"}), 404
+
+    json_jobs = list(map(lambda x: x.to_json(), jobs))
+    return jsonify({"jobs": json_jobs})
+
+#Get Jobs assigned to a specific fixer
+@approutes.route("/jobs/fixer/<fixer_name>")
+def get_jobs_by_fixer(fixer_name):
+    jobs = Job.query.filter_by(fixer_name=fixer_name).all()
+
+    if not jobs: return jsonify({"message": "Jobs for this fixer not found"}), 404
+
+    json_jobs = list(map(lambda x: x.to_json(), jobs))
+    return jsonify({"jobs": json_jobs})
+
 #Creating a job
 @approutes.route("/jobs", methods=["POST"])
 def create_job():
@@ -92,6 +112,7 @@ def create_job():
     #return message for the newly created job
     return jsonify({"message": "Job created"}), 201
 
+'''
 #Delete a job
 @approutes.route("/delete_job/<int:jobid>", methods=["DELETE"])
 def delete_job(jobid):
@@ -107,3 +128,4 @@ def delete_job(jobid):
 
     #Return confirmation message
     return jsonify({"message": "User deleted"}), 200
+    '''

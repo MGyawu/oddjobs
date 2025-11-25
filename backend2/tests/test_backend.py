@@ -1,4 +1,5 @@
 #from models2 import User
+from flask import jsonify
 
 def test_connect_route(client,app):
     response = client.get("/users")
@@ -111,6 +112,99 @@ def test_create_job_missing_fields(client):
 
     assert response.status_code == 400
     assert response.get_json()["message"] == "You must include an address and description"
+
+def test_get_job_by_user(client,app):
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "Mow my lawn gang",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+    })
+
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "paint my house",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+    })
+
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JaneUserName",
+            "address" : "Duck City",
+            "description" : "Build my shelf",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+    })
+
+    #with app.app_context():
+        #from models2 import Job
+    #    job = Job.query.filter_by(user_name="JohnUserName").all()
+
+    response = client.get("/jobs/JohnUserName")
+    data = response.get_json()
+    assert response.status_code == 200
+    #assert Job.query.count() == 2
+
+    assert "jobs" in data
+    assert len(data["jobs"]) == 2  # John has 2 jobs
+
+    # Optionally, check the content
+    descriptions = [job["description"] for job in data["jobs"]]
+    assert "Mow my lawn gang" in descriptions
+    assert "paint my house" in descriptions
+
+    response = client.get("/jobs/MarioMario")
+    assert response.status_code == 404
+
+
+def test_get_jobs_by_fixer(client,app):
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "Mow my lawn gang",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+    })
+
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "paint my house",
+            "fixerName" : "Wreck it Ralph",
+            "status" : "In Progress"
+    })
+
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JaneUserName",
+            "address" : "Duck City",
+            "description" : "Build my shelf",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+    })
+
+
+    response = client.get("/jobs/fixer/Fix it felix")
+    data = response.get_json()
+    assert response.status_code == 200
+    #assert Job.query.count() == 2
+
+    assert "jobs" in data
+    assert len(data["jobs"]) == 2  
+    
+    descriptions = [job["description"] for job in data["jobs"]]
+    assert "Mow my lawn gang" in descriptions
+    assert "Build my shelf" in descriptions
+
+    response = client.get("/jobs/fixer/MarioMario")
+    assert response.status_code == 404
 
 '''
 def test_get_user(client, app):
