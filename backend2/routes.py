@@ -29,14 +29,14 @@ def create_user():
 
     userid = str(uuid4())
     user_name = request.json.get("username")
-    #password = request.json.get("password")
+    password = request.json.get("password")
     first_name = request.json.get("firstName")
     last_name = request.json.get("lastName")
     email = request.json.get("email")
 
     #return error message if any of the user entered values are empty
     #if not user_name or not password or not first_name or not last_name or not email:
-    if not user_name or not first_name or not last_name or not email:
+    if not user_name or not password or not first_name or not last_name or not email:
         return (
             jsonify({"message" : "Important account info missing. Fill all fields"}),
             400,
@@ -46,7 +46,7 @@ def create_user():
     #commit anything in the session.
     #In the event of an error/exception we return the error with a status code of 400
     #new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
-    new_user = User(userid=userid, user_name=user_name, first_name=first_name, last_name=last_name, email=email)
+    new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
     try:
         db.session.add(new_user)
         db.session.commit()
@@ -64,7 +64,7 @@ def get_jobs():
     return jsonify({"jobs": json_jobs})
 
 #Get Jobs created by a specific user
-@approutes.route("/jobs/<user_name>")
+@approutes.route("/jobs/users/<user_name>", methods=["GET"])
 def get_jobs_by_user(user_name):
     jobs = Job.query.filter_by(user_name=user_name).all()
 
@@ -74,7 +74,7 @@ def get_jobs_by_user(user_name):
     return jsonify({"jobs": json_jobs})
 
 #Get Jobs assigned to a specific fixer
-@approutes.route("/jobs/fixer/<fixer_name>")
+@approutes.route("/jobs/fixer/<fixer_name>", methods=["GET"])
 def get_jobs_by_fixer(fixer_name):
     jobs = Job.query.filter_by(fixer_name=fixer_name).all()
 
@@ -82,6 +82,12 @@ def get_jobs_by_fixer(fixer_name):
 
     json_jobs = list(map(lambda x: x.to_json(), jobs))
     return jsonify({"jobs": json_jobs})
+
+#Allows a fixer to assign themself as a fixer
+#@approutes.route()
+
+#Allows job creator to set the job as completed
+#@approutes.route()
 
 #Creating a job
 @approutes.route("/jobs", methods=["POST"])
@@ -91,7 +97,7 @@ def create_job():
     address = request.json.get("address")
     description = request.json.get("description")
     fixer_name = request.json.get("fixerName")
-    status = request.json.get("status")
+    status = "Open"
 
     if not user_name or not address or not description or not status:
         return (

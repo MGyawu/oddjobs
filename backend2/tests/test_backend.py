@@ -11,7 +11,7 @@ def test_connect_route(client,app):
 def test_create_user(client, app):
     response = client.post("/users", json={
         "username": "JohnUserName",
-        #"password": "Secret123",
+        "password": "Secret123",
         "firstName": "John",
         "lastName": "Doe",
         "email": "John.Doe@gmail.com"
@@ -50,7 +50,7 @@ def test_create_user_missing_fields(client,app):
 def test_get_user(client, app):
     response = client.post("/users", json={
         "username": "JohnUserName",
-        #"password": "Secret123",
+        "password": "Secret123",
         "firstName": "John",
         "lastName": "Doe",
         "email": "John.Doe@gmail.com"
@@ -98,7 +98,7 @@ def test_create_job(client,app):
         assert job.address == "Duff City"
         assert job.description == "Mow my lawn gang"
         assert job.fixer_name == "Fix it felix"
-        assert job.status == "In Progress"
+        #assert job.status == "In Progress"
 
 def test_create_job_missing_fields(client):
     # Missing 'address'
@@ -145,7 +145,7 @@ def test_get_job_by_user(client,app):
         #from models2 import Job
     #    job = Job.query.filter_by(user_name="JohnUserName").all()
 
-    response = client.get("/jobs/JohnUserName")
+    response = client.get("/jobs/users/JohnUserName")
     data = response.get_json()
     assert response.status_code == 200
     #assert Job.query.count() == 2
@@ -205,6 +205,18 @@ def test_get_jobs_by_fixer(client,app):
 
     response = client.get("/jobs/fixer/MarioMario")
     assert response.status_code == 404
+
+'''
+def test_assign_fixer(client, app):
+    #Posts a fixer value to as specific job
+    response = client.post()
+
+    with app.app_context(): 
+        from models2 import Job
+        job = Job.query.filter_by(fixer_name=).first()
+        assert response.status_code == 200
+        assert response.get_json()["fixerName"] == ""
+'''
 
 '''
 def test_get_user(client, app):

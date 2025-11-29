@@ -6,6 +6,7 @@ class User(db.Model):
     #userid = db.Column(db.Integer, primary_key=True)
     userid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
+    password = db.Column(db.String(100), unique=False, nullable=False)
     first_name = db.Column(db.String(100), unique=False, nullable=False)
     last_name = db.Column(db.String(100), unique=False, nullable=False)
     email = db.Column(db.String(100), unique=False, nullable=False)
@@ -15,6 +16,7 @@ class User(db.Model):
         return{
             "id" : self.userid,
             "username" : self.user_name,
+            "password" : self.password,
             "firstName" : self.first_name,
             "lastName" : self.last_name,
             "email" : self.email
