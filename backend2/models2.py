@@ -31,7 +31,7 @@ class Job(db.Model):
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     address = db.Column(db.String(100), unique=False, nullable=False)
     description = db.Column(db.String(300), unique=False, nullable=False)
-    fixer_name = db.Column(db.String(100), unique=False, nullable=False)
+    fixer_name = db.Column(db.String(100), unique=False)
     status = db.Column(db.String(100), unique=False, nullable=False)
 
 

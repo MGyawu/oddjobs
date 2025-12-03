@@ -63,6 +63,15 @@ def get_jobs():
     json_jobs = list(map(lambda x: x.to_json(), jobs))
     return jsonify({"jobs": json_jobs})
 
+#Get a specific Job by jobid
+@approutes.route("/jobs/id/<jobid>", methods=["GET"])
+def get_job(jobid):
+    job = Job.query.filter_by(jobid=jobid).first()
+
+    if not job: return jsonify({"message": "Job not found"})
+
+    return jsonify(job.to_json())
+
 #Get Jobs created by a specific user
 @approutes.route("/jobs/users/<user_name>", methods=["GET"])
 def get_jobs_by_user(user_name):
@@ -84,10 +93,30 @@ def get_jobs_by_fixer(fixer_name):
     return jsonify({"jobs": json_jobs})
 
 #Allows a fixer to assign themself as a fixer
-#@approutes.route()
+@approutes.route("/jobs/assign/fixer/<jobid>/<user_name>", methods=["PUT"])
+def assign_fixer(jobid, user_name):
+    job = Job.query.filter_by(jobid=jobid).first()
+
+    if not job: return jsonify({"message" : "Job not found"}), 404
+
+    job.fixer_name = user_name
+    job.status = "In Progress"
+
+    db.session.commit()
+
+    return jsonify({"message" : "The fixer for the job has been assigned."}), 200
+
 
 #Allows job creator to set the job as completed
-#@approutes.route()
+@approutes.route("/jobs/users/<user_name>/<jobid>", methods=["PUT"])
+def set_job_complete(user_name, jobid):
+    job = Job.query.filter_by(user_name=user_name, jobid=jobid).first()
+
+    if not job: return jsonify({"message": "Jobs not found"}), 404
+
+    job.status = "Complete"
+    db.session.commit()
+    return jsonify({"message" : "Job has been completed"})
 
 #Creating a job
 @approutes.route("/jobs", methods=["POST"])

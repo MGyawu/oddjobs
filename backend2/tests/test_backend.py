@@ -158,8 +158,28 @@ def test_get_job_by_user(client,app):
     assert "Mow my lawn gang" in descriptions
     assert "paint my house" in descriptions
 
-    response = client.get("/jobs/MarioMario")
+    response = client.get("/jobs/users/MarioMario")
     assert response.status_code == 404
+
+    def test_get_job(client,app):
+        response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "Mow my lawn gang",
+            "fixerName" : "Fix it felix",
+            "status" : "In Progress"
+        })
+
+        with app.app_context():
+            from models2 import Job
+            job = Job.query.filter_by(user_name="JohnUserName").first()
+
+        response = client.get(f"/jobs/id/{job.jobid}")
+        assert response.status_code == 200
+        data = response.get_json()
+
+        assert data["jobid"] == job.jobid
 
 
 def test_get_jobs_by_fixer(client,app):
@@ -206,17 +226,75 @@ def test_get_jobs_by_fixer(client,app):
     response = client.get("/jobs/fixer/MarioMario")
     assert response.status_code == 404
 
-'''
+
 def test_assign_fixer(client, app):
     #Posts a fixer value to as specific job
-    response = client.post()
+    response = client.post("/users", json={
+        "username": "Jane",
+        "password": "Secret123",
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "email": "Jane.Doe@gmail.com"
+    })
+
+    response = client.post("/jobs", json={
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "paint my house",
+            #"fixerName" : "",
+            "status" : "In Progress"
+    })
 
     with app.app_context(): 
         from models2 import Job
-        job = Job.query.filter_by(fixer_name=).first()
-        assert response.status_code == 200
-        assert response.get_json()["fixerName"] == ""
-'''
+        job = Job.query.first()
+        from models2 import User
+        user = User.query.first()
+        #job.fixer_name = user.user_name
+        #assert response.status_code == 200
+        #assert response.get_json()["fixerName"] == ""
+    
+    response_assign = client.put(f"/jobs/assign/fixer/{job.jobid}/{user.user_name}")
+    with app.app_context():
+        updated_job = Job.query.first()
+    assert response_assign.status_code == 200
+    assert response_assign.get_json()["message"] == "The fixer for the job has been assigned."
+    assert updated_job.status == "In Progress"
+
+    with app.app_context():
+        updated_job = Job.query.get(job.jobid)
+        assert updated_job.fixer_name == user.user_name
+
+def test_set_job_complete(client,app):
+    response = client.post("/users", json={
+        "username": "Jane",
+        "password": "Secret123",
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "email": "Jane.Doe@gmail.com"
+    })
+
+    response = client.post("/jobs", json={
+        #"jobid" : "67",
+        "username" : "Jane",
+        "address" : "Duck City",
+        "description" : "Build my shelf",
+        "fixerName" : "Fix it felix",
+        "status" : "In Progress"
+    })
+
+    with app.app_context():
+        from models2 import User, Job
+        user = User.query.filter_by(user_name="Jane").first()
+        job = Job.query.filter_by(user_name="Jane").first()
+
+    response_complete = client.put(f"/jobs/users/Jane/{job.jobid}")
+    with app.app_context():
+        updated_job = Job.query.filter_by(jobid=job.jobid).first()
+    assert response_complete.status_code == 200
+    assert updated_job.status == "Complete"
+    assert response_complete.get_json()["message"] == "Job has been completed"
 
 '''
 def test_get_user(client, app):
