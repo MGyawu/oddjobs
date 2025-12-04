@@ -68,7 +68,7 @@ def get_jobs():
 def get_job(jobid):
     job = Job.query.filter_by(jobid=jobid).first()
 
-    if not job: return jsonify({"message": "Job not found"})
+    if not job: return jsonify({"message": "Job not found"}), 404
 
     return jsonify(job.to_json())
 
