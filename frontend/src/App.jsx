@@ -8,6 +8,7 @@ function App() {
   
   //Define state that stores jobs
   const [jobs, setJobs] = useState([])//([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
+  //const [jobs, setJobs] = useState([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
 
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
