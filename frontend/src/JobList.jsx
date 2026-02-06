@@ -12,12 +12,14 @@ const JobList = ({jobs}) =>{
             </thead>
             <tbody>
                 {jobs.map((job) => (
-                    <tr key={job.jobid}>
-                        <td>{job.username}</td>
-                        <td>{job.address}</td>
-                        <td>{job.description}</td>
-                        <td>{job.fixerName}</td>
-                        <td>{job.status}</td>
+                    <tr>
+                    <button className="job" key={job.jobid}>
+                        <tr><td className="element">Job Poster: </td><td className="value">{job.username}</td></tr>
+                        <tr><td className="element">Address: </td><td className="value">{job.address}</td></tr>
+                        <tr><td className="element">Description: </td><td className="value">{job.description}</td></tr>
+                        <tr><td className="element">Fixer: </td><td className="value">{job.fixerName}</td></tr>
+                        <tr><td className="element">Status: </td><td className="value">{job.status}</td></tr>
+                    </button>
                     </tr>
                 ))}
             </tbody>

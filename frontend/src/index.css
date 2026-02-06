@@ -46,6 +46,19 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
+.job {
+  width: 1000px;
+}
+
+.element{
+  text-align: right;
+}
+
+.value{
+  text-align: left;
+}
+
 button:hover {
   border-color: #646cff;
 }

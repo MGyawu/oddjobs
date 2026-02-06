@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.db
+testdata.json
 .venv/
 .pytest_cache/
 backend/
