@@ -35,7 +35,7 @@ function App() {
     console.log(data.jobs)
   }
 
-  return <JobList jobs={jobs} />
+  return <JobList jobs={jobs} setJobs={setJobs}/>
 }
 
 export default App
