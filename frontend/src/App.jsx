@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 //import viteLogo from '/vite.svg'
 import './App.css'
 import JobList from './JobList'
+import CreateJob from './CreateJob'
+import SingleJob from './SingleJob'
 //import testdata from './testdata.json'
 function App() {
   
@@ -22,6 +24,9 @@ function App() {
   {"jobid": 2004, "username": "Charlie Brown", "address": "321 Pine St, Anycity", "description": "squeaky door", "fixername": "placeholder", "status":"open"},
   ])
 
+  //const [singleJob, setSingleJob] = useState([])
+  const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
+
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
     //fetchJobs()
@@ -35,7 +40,9 @@ function App() {
     console.log(data.jobs)
   }
 
-  return <JobList jobs={jobs} setJobs={setJobs}/>
+  //return <JobList jobs={jobs} setJobs={setJobs}/>
+  //return <CreateJob />
+  return <SingleJob singleJob={singleJob} setSingleJob={setSingleJob}/>
 }
 
 export default App

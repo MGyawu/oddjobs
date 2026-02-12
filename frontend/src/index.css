@@ -59,6 +59,10 @@ button {
   text-align: left;
 }
 
+.form{
+  text-align: right;
+}
+
 button:hover {
   border-color: #646cff;
 }
