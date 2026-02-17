@@ -77,6 +77,25 @@ def test_create_job(client,app, test_job_data):
 
     assert after == before
 
+def test_get_job(client,app, test_job_data):
+    response = client.post("/jobs", json=test_job_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+
+    response = client.get(f"/jobs/id/{job.jobid}")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert job.user_name == data["username"]
+    assert job.address == data["address"]
+    assert job.description == data["description"]
+    assert job.fixer_name == data["fixerName"]
+
+    response = client.get("jobs/id/fghhbvfgvhbngtvbnyh678567896789")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Job not found"
+
 def test_get_jobs(client,app, test_job_data):
     for i in range(0, len(test_job_data)-2):
         response = client.post("/jobs", json=test_job_data[i])
@@ -93,7 +112,24 @@ def test_get_jobs(client,app, test_job_data):
         assert job["address"] == test_job_data[i]["address"]
         assert job["description"] == test_job_data[i]["description"]
         assert job["fixerName"] == test_job_data[i]["fixerName"]
+
+def test_get_job_by_user(client,app, test_job_data):
+    for i in range(0, len(test_job_data)-2):
+        response = client.post("/jobs", json=test_job_data[i])
+        assert response.status_code == 201
     
+    response = client.get(f"/jobs/users/{test_job_data[0]['username']}")
+    assert response.status_code == 200
+    data = response.get_json()
+    jobs = data["jobs"]
+    assert len(jobs) == len(test_job_data) - 2
+
+    for i, job in enumerate(jobs):
+        assert job["username"] == test_job_data[i]["username"]
+        assert job["username"] != "JaneUserName"
+        assert job["address"] == test_job_data[i]["address"]
+        assert job["description"] == test_job_data[i]["description"]
+        assert job["fixerName"] == test_job_data[i]["fixerName"]    
 
     '''
     for i in range(len(data)):
