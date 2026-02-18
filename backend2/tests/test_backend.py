@@ -126,10 +126,63 @@ def test_get_job_by_user(client,app, test_job_data):
 
     for i, job in enumerate(jobs):
         assert job["username"] == test_job_data[i]["username"]
-        assert job["username"] != "JaneUserName"
+        assert job["username"] != test_job_data[2]["username"]
         assert job["address"] == test_job_data[i]["address"]
         assert job["description"] == test_job_data[i]["description"]
         assert job["fixerName"] == test_job_data[i]["fixerName"]    
+
+def test_get_job_by_fixer(client,app, test_job_data):
+    for i in range(0, len(test_job_data)-1):
+        response = client.post("/jobs", json=test_job_data[i])
+        assert response.status_code == 201
+    
+    response = client.get(f"/jobs/fixer/{test_job_data[0]['fixerName']}")
+    assert response.status_code == 200
+    data = response.get_json()
+    jobs = data["jobs"]
+    assert len(jobs) == len(test_job_data) - 2
+
+    for job in jobs:
+        assert job["fixerName"] == test_job_data[0]["fixerName"]
+        assert job["fixerName"] != test_job_data[1]["fixerName"]
+
+def test_assign_fixer(client,app,test_job_no_fixer):
+    response = client.post("/jobs", json=test_job_no_fixer)
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_no_fixer["username"]).first()
+
+    response = client.put(f"/jobs/assign/fixer/{job.jobid}/Fixitfelix")
+    assert response.status_code == 200
+    with app.app_context():
+        new_job = Job.query.filter_by(fixer_name="Fixitfelix").first()
+    assert new_job is not None
+    assert new_job.fixer_name == "Fixitfelix"
+    assert new_job.status == "In Progress"
+    data = response.get_json()
+    assert data["message"] == "The fixer for the job has been assigned."
+
+    response = client.put("/jobs/assign/fixer/34567897654456788654567876/Fixitfelix")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Job not found"
+
+def test_set_job_complete(client,app,test_job_data):
+    response = client.post("/jobs", json=test_job_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+
+    response = client.put(f"/jobs/users/{job.user_name}/{job.jobid}")
+    assert response.status_code == 200
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+    assert job.status == "Complete"
+
+    response = client.put("/jobs/users/Frank/619")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Jobs not found"
 
     '''
     for i in range(len(data)):

@@ -65,3 +65,12 @@ def test_job_data():
             "fixerName": "Fix it felix",
         }
     ]
+
+@pytest.fixture
+def test_job_no_fixer():
+    return {
+            #"jobid" : "67",
+            "username" : "JohnUserName",
+            "address" : "Duff City",
+            "description" : "Mow my lawn gang"
+        }
