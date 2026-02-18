@@ -1,5 +1,5 @@
-#from models2 import User
-from flask import jsonify
+from models2 import User
+from models2 import Job
 
 def test_connect_route(client,app):
     response = client.get("/users")
@@ -8,6 +8,192 @@ def test_connect_route(client,app):
     response = client.get("/jobs")
     assert response.status_code == 200
 
+### Testing User routes/functions ###
+
+def test_create_user(client,app, test_user_data):
+    response = client.post("/users", json=test_user_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        user = User.query.filter_by(user_name=test_user_data[0]["username"]).first()
+        assert user.user_name == test_user_data[0]["username"]
+        assert user.first_name == test_user_data[0]["firstName"]
+        assert user.last_name == test_user_data[0]["lastName"]
+        assert user.email == test_user_data[0]["email"]
+        before = User.query.count()
+
+    response = client.post("/users", json=test_user_data[1])
+    assert response.status_code == 400
+    with app.app_context():
+        after = User.query.count()
+
+        user = User.query.filter_by(
+            user_name=test_user_data[1]["username"],
+            email=test_user_data[1]["email"]
+        ).filter(User.first_name==None).first()
+        assert user is None
+
+    assert after == before
+
+def test_get_user(client,app, test_user_data):
+    response = client.post("/users", json=test_user_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        user =  User.query.filter_by(user_name=test_user_data[0]["username"]).first()
+
+    response = client.get(f"/users/{user.userid}")
+    data = response.get_json()
+    assert data["username"] == "JohnUserName"
+    assert response.status_code == 200
+
+    response = client.get("/users/3456787654567")
+    data = response.get_json()
+    assert response.status_code == 404
+    assert data["message"] == "User not found"
+
+
+### Test Jobs Functions/Routes ###
+
+def test_create_job(client,app, test_job_data):
+    response = client.post("/jobs", json=test_job_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+        assert job.user_name == test_job_data[0]["username"]
+        assert job.address == test_job_data[0]["address"]
+        assert job.description == test_job_data[0]["description"]
+        assert job.fixer_name == test_job_data[0]["fixerName"]
+        assert job.status == "Open"
+        before = Job.query.count()
+    
+    response = client.post("/jobs", json=test_job_data[len(test_job_data)-1])
+    assert response.status_code == 400
+    with app.app_context():
+        after = Job.query.count()
+
+        job = Job.query.filter_by(
+            user_name=test_job_data[len(test_job_data)-1]["username"],
+        ).filter(Job.address==None).first()
+        assert job is None
+
+    assert after == before
+
+def test_get_job(client,app, test_job_data):
+    response = client.post("/jobs", json=test_job_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+
+    response = client.get(f"/jobs/id/{job.jobid}")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert job.user_name == data["username"]
+    assert job.address == data["address"]
+    assert job.description == data["description"]
+    assert job.fixer_name == data["fixerName"]
+
+    response = client.get("jobs/id/fghhbvfgvhbngtvbnyh678567896789")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Job not found"
+
+def test_get_jobs(client,app, test_job_data):
+    for i in range(0, len(test_job_data)-2):
+        response = client.post("/jobs", json=test_job_data[i])
+        assert response.status_code == 201
+
+    response = client.get("/jobs")
+    assert response.status_code == 200
+    data = response.get_json()
+    jobs = data["jobs"]
+    assert len(jobs) == len(test_job_data) - 2
+
+    for i, job in enumerate(jobs):
+        assert job["username"] == test_job_data[i]["username"]
+        assert job["address"] == test_job_data[i]["address"]
+        assert job["description"] == test_job_data[i]["description"]
+        assert job["fixerName"] == test_job_data[i]["fixerName"]
+
+def test_get_job_by_user(client,app, test_job_data):
+    for i in range(0, len(test_job_data)-2):
+        response = client.post("/jobs", json=test_job_data[i])
+        assert response.status_code == 201
+    
+    response = client.get(f"/jobs/users/{test_job_data[0]['username']}")
+    assert response.status_code == 200
+    data = response.get_json()
+    jobs = data["jobs"]
+    assert len(jobs) == len(test_job_data) - 2
+
+    for i, job in enumerate(jobs):
+        assert job["username"] == test_job_data[i]["username"]
+        assert job["username"] != test_job_data[2]["username"]
+        assert job["address"] == test_job_data[i]["address"]
+        assert job["description"] == test_job_data[i]["description"]
+        assert job["fixerName"] == test_job_data[i]["fixerName"]    
+
+def test_get_job_by_fixer(client,app, test_job_data):
+    for i in range(0, len(test_job_data)-1):
+        response = client.post("/jobs", json=test_job_data[i])
+        assert response.status_code == 201
+    
+    response = client.get(f"/jobs/fixer/{test_job_data[0]['fixerName']}")
+    assert response.status_code == 200
+    data = response.get_json()
+    jobs = data["jobs"]
+    assert len(jobs) == len(test_job_data) - 2
+
+    for job in jobs:
+        assert job["fixerName"] == test_job_data[0]["fixerName"]
+        assert job["fixerName"] != test_job_data[1]["fixerName"]
+
+def test_assign_fixer(client,app,test_job_no_fixer):
+    response = client.post("/jobs", json=test_job_no_fixer)
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_no_fixer["username"]).first()
+
+    response = client.put(f"/jobs/assign/fixer/{job.jobid}/Fixitfelix")
+    assert response.status_code == 200
+    with app.app_context():
+        new_job = Job.query.filter_by(fixer_name="Fixitfelix").first()
+    assert new_job is not None
+    assert new_job.fixer_name == "Fixitfelix"
+    assert new_job.status == "In Progress"
+    data = response.get_json()
+    assert data["message"] == "The fixer for the job has been assigned."
+
+    response = client.put("/jobs/assign/fixer/34567897654456788654567876/Fixitfelix")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Job not found"
+
+def test_set_job_complete(client,app,test_job_data):
+    response = client.post("/jobs", json=test_job_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+
+    response = client.put(f"/jobs/users/{job.user_name}/{job.jobid}")
+    assert response.status_code == 200
+    with app.app_context():
+        job = Job.query.filter_by(user_name=test_job_data[0]["username"]).first()
+    assert job.status == "Complete"
+
+    response = client.put("/jobs/users/Frank/619")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["message"] == "Jobs not found"
+
+    '''
+    for i in range(len(data)):
+        assert data[i]["username"] == test_job_data[i]["username"]
+        assert data[i]["address"] == test_job_data[i]["address"]
+        assert data[i]["description"] == test_job_data[i]["description"]
+        assert data[i]["fixerName"] == test_job_data[i]["fixerName"]
+        assert data[i]["status"] == test_job_data[i]["status"]
+    '''
+
+'''
 def test_create_user(client, app):
     response = client.post("/users", json={
         "username": "JohnUserName",
@@ -41,11 +227,12 @@ def test_create_user_missing_fields(client,app):
         "email": "John.Doe@gmail.com"
     })
 
+    assert response.status_code == 400
+    assert response.get_json()["message"] == "Important account info missing. Fill all fields"
+
     with app.app_context():
         from models2 import User
         assert User.query.filter_by(user_name="JohnUserName").first() == None
-        assert response.status_code == 400
-        assert response.get_json()["message"] == "Important account info missing. Fill all fields"
 
 def test_get_user(client, app):
     response = client.post("/users", json={
@@ -98,7 +285,7 @@ def test_create_job(client,app):
         assert job.address == "Duff City"
         assert job.description == "Mow my lawn gang"
         assert job.fixer_name == "Fix it felix"
-        #assert job.status == "In Progress"
+        assert job.status == "In Progress"
 
 def test_create_job_missing_fields(client):
     # Missing 'address'
@@ -161,28 +348,26 @@ def test_get_job_by_user(client,app):
     response = client.get("/jobs/users/MarioMario")
     assert response.status_code == 404
 
-    def test_get_job(client,app):
-        response = client.post("/jobs", json={
-            #"jobid" : "67",
-            "username" : "JohnUserName",
-            "address" : "Duff City",
-            "description" : "Mow my lawn gang",
-            "fixerName" : "Fix it felix",
-            "status" : "In Progress"
-        })
 
-        with app.app_context():
-            from models2 import Job
-            job = Job.query.filter_by(user_name="JohnUserName").first()
+def test_get_job(client,app):
+    response = client.post("/jobs", json={
+        #"jobid" : "67",
+        "username" : "JohnUserName",
+        "address" : "Duff City",
+        "description" : "Mow my lawn gang",
+        "fixerName" : "Fix it felix",
+        "status" : "In Progress"
+    })
 
-        response = client.get(f"/jobs/id/{job.jobid}")
-        assert response.status_code == 200
-        data = response.get_json()
+    with app.app_context():
+        from models2 import Job
+        job = Job.query.filter_by(user_name="JohnUserName").first()
 
-        assert data["jobid"] == job.jobid
+    response = client.get(f"/jobs/id/{job.jobid}")
+    assert response.status_code == 200
+    data = response.get_json()
 
-
-def test_get_jobs_by_fixer(client,app):
+    assert data["jobid"] == job.jobid
     response = client.post("/jobs", json={
             #"jobid" : "67",
             "username" : "JohnUserName",
@@ -297,20 +482,21 @@ def test_set_job_complete(client,app):
     assert response_complete.get_json()["message"] == "Job has been completed"
 
 '''
-def test_get_user(client, app):
-    person = {
-        "username": "JohnUserName",
-        #"password": "Secret123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "John.Doe@gmail.com"
-    }
+#def test_get_user(client, app):
+#    person = {
+#        "username": "JohnUserName",
+#        #"password": "Secret123",
+#        "firstName": "John",
+#        "lastName": "Doe",
+#        "email": "John.Doe@gmail.com"
+#    }
 
-    response = client.post("/users", json=person)
+#    response = client.post("/users", json=person)
 
-    response2 = client.get()
+#    response2 = client.get()
 '''
 
 
 #def test_create_user(client, app):
 #    response = client.post("/create_user")
+'''
