@@ -5,7 +5,13 @@ import './App.css'
 import JobList from './JobList'
 import CreateJob from './CreateJob'
 import SingleJob from './SingleJob'
+import SignUp from './SignUp'
+import NavBar from './NavBar'
 //import testdata from './testdata.json'
+
+//Router Creation
+import {BrowserRouter,Routes,Route,Link} from 'react-router-dom'
+
 function App() {
   
   //Define state that stores jobs
@@ -42,7 +48,23 @@ function App() {
 
   //return <JobList jobs={jobs} setJobs={setJobs}/>
   //return <CreateJob />
-  return <SingleJob singleJob={singleJob} setSingleJob={setSingleJob}/>
+  //return <SingleJob singleJob={singleJob} setSingleJob={setSingleJob}/>
+  //return <SignUp />
+
+  //Router Creation
+  return (
+    <div>
+      {/*<NavBar />*/}
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path='/' element={<SignUp />}></Route>
+          <Route path='/create' element={<CreateJob />}/>
+          <Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  )
 }
 
 export default App
