@@ -3,7 +3,6 @@ import React from "react";
 const JobList = ({jobs, setJobs}) =>{
     return <div>
         <h2>Job List</h2>
-        <button>Create New Job</button>
         <table>
             <thead>
                 <tr>

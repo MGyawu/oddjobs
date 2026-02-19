@@ -9,8 +9,8 @@ const NavBar = () =>{
     <div>
         <h1> Odd Jobs</h1>
         <nav>
-            <button>Create a Job</button>
-            <button>Job List</button>
+            <button onClick={() => navigate('/create')}>Create a Job</button>
+            <button onClick={() => navigate('/jobs')}>Job List</button>
             <button>My Jobs</button>
         </nav>
     </div>
