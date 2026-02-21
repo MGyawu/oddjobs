@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 const NavBar = () =>{
     const navigate = useNavigate()
 
-    if (location.pathname === "/") return <h1>Odd Jobs</h1>
+    if (location.pathname === "/" || location.pathname === "/login") return <h1>Odd Jobs</h1>
 
     return(
     <div>
