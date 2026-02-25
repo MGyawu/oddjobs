@@ -1,6 +1,13 @@
 import React from "react";
+import { useContext, useState, useEffect } from "react";
+import { JobsContext } from "./App";
 
-const JobList = ({jobs, setJobs}) =>{
+//const [jobs,setJobs] = useContext(JobsContext)
+
+const JobList = () =>{//{jobs, setJobs}) =>{
+    
+    const {jobs,setJobs} = useContext(JobsContext)
+    
     return <div>
         <h2>Job List</h2>
         <table>
