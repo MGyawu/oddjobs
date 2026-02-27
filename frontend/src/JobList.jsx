@@ -1,12 +1,15 @@
 import React from "react";
 import { useContext, useState, useEffect } from "react";
-import { JobsContext } from "./App";
+import { JobsContext, SingleJobContext } from "./App";
+import { useNavigate } from "react-router-dom";
 
 //const [jobs,setJobs] = useContext(JobsContext)
 
 const JobList = () =>{//{jobs, setJobs}) =>{
     
     const {jobs,setJobs} = useContext(JobsContext)
+    const {singleJob, setSingleJob} = useContext(SingleJobContext)
+    const navigate = useNavigate()
     
     return <div>
         <h2>Job List</h2>
@@ -19,7 +22,10 @@ const JobList = () =>{//{jobs, setJobs}) =>{
             <tbody>
                 {jobs.map((job) => (
                     <tr>
-                    <button className="job" key={job.jobid}>
+                    <button onClick={() => {
+                        setSingleJob(job)
+                        navigate('/singlejob')
+                    }}className="job" key={job.jobid}>
                         <tr><td className="element">Job Poster: </td><td className="value">{job.username}</td></tr>
                         <tr><td className="element">Address: </td><td className="value">{job.address}</td></tr>
                         <tr><td className="element">Description: </td><td className="value">{job.description}</td></tr>

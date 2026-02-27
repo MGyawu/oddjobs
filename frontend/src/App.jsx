@@ -9,6 +9,7 @@ import SignUp from './SignUp'
 import NavBar from './NavBar'
 import LogIn from './LogIn'
 import SignBar from './SignBar'
+import Job from './SingleJob'
 //import testdata from './testdata.json'
 
 //Router Creation
@@ -85,6 +86,7 @@ function App() {
                 <Route path='/create' element={<CreateJob />}/>
                 {/*<Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>*/}
                 <Route path='/jobs' element={<JobList />}/>
+                <Route path='/singlejob' element={<Job />} />
               </Routes>
               <SignBar />
             </BrowserRouter>
