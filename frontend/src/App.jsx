@@ -18,6 +18,9 @@ import {BrowserRouter,Routes,Route,Link} from 'react-router-dom'
 //Context Creation
 import { createContext,useState, useEffect, useContext } from 'react'
 
+//testing
+import { CURRENTUSER, POSTEDJOBS } from './tests/testdata'
+
 export const UserContext = createContext()
 export const JobsContext = createContext()
 export const SingleJobContext = createContext()
@@ -33,6 +36,8 @@ function App() {
   //setJobs(testdata)
   
   //Context Creation Test User
+  const [user, setUser] = useState(CURRENTUSER)
+  /*
   const [user, setUser] = useState({
     "id": "4206769",
     "username" : "Doc Martin",
@@ -41,7 +46,10 @@ function App() {
     "lastName" : "Martin",
     "email" : "Doc.Martin@hotmail.org"
   })
+    */
 
+  const [jobs, setJobs] = useState(POSTEDJOBS)
+  /*
   const [jobs, setJobs] = useState([{"jobid": 2000, "username": "John Doe", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"},
   {"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"},
   {"jobid": 2002, "username": "Bob Smith", "address": "456 Elm St, Othertown", "description": "clogged drain", "fixername": "placeholder", "status":"open"},
@@ -49,6 +57,7 @@ function App() {
   {"jobid": 2004, "username": "Charlie Brown", "address": "321 Pine St, Anycity", "description": "squeaky door", "fixername": "placeholder", "status":"open"},
   {"jobid": 2005, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "A fire truck crashed into my home", "fixername": "placeholder", "status":"open"}
   ])
+  */
 
   //const [singleJob, setSingleJob] = useState([])
   const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
@@ -75,7 +84,7 @@ function App() {
   return (
     <div>
       {/*<NavBar />*/}
-      <UserContext.Provider value={UserContext}>
+      <UserContext.Provider value={{user, setUser}}>
         <JobsContext.Provider value={{jobs, setJobs}}>
           <SingleJobContext.Provider value = {{singleJob, setSingleJob}}>
             <BrowserRouter>
@@ -86,7 +95,7 @@ function App() {
                 <Route path='/create' element={<CreateJob />}/>
                 {/*<Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>*/}
                 <Route path='/jobs' element={<JobList />}/>
-                <Route path='/singlejob' element={<Job />} />
+                <Route path='/jobs/:jobid' element={<Job />} />
               </Routes>
               <SignBar />
             </BrowserRouter>

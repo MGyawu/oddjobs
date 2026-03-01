@@ -24,7 +24,7 @@ const JobList = () =>{//{jobs, setJobs}) =>{
                     <tr>
                     <button onClick={() => {
                         setSingleJob(job)
-                        navigate('/singlejob')
+                        navigate(`/jobs/${job.jobid}`)
                     }}className="job" key={job.jobid}>
                         <tr><td className="element">Job Poster: </td><td className="value">{job.username}</td></tr>
                         <tr><td className="element">Address: </td><td className="value">{job.address}</td></tr>

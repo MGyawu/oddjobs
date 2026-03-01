@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 const SignBar = () =>{
     const navigate = useNavigate()
 
-    if (location.pathname === "/create" || location.pathname === "/jobs") return null
+    if (location.pathname === "/create" || location.pathname.includes("/jobs")) return null//location.pathname === "/jobs") return null
 
     const NavFromSignUp = () => {
         if (location.pathname === "/"){
