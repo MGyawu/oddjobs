@@ -60,7 +60,8 @@ function App() {
   */
 
   //const [singleJob, setSingleJob] = useState([])
-  const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
+  //const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
+  const [singleJob, setSingleJob] = useState({})
 
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
