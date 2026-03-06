@@ -25,7 +25,7 @@ export const UserContext = createContext()
 export const JobsContext = createContext()
 export const SingleJobContext = createContext()
 
-function App() {
+function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
   
   //Define state that stores jobs
   //const [jobs, setJobs] = useState([])//([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
@@ -65,18 +65,33 @@ function App() {
   //const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
   const [singleJob, setSingleJob] = useState({})
 
-  //Calls fetchJobs() whenever the page renders
-  useEffect(() => {
-    //fetchJobs()
-  }, [])
-
+  
   //Send request to backend to receive list of jobs
-  const fetchJobs = async () => {
+  /*const fetchJobs = async () => {
     const response = await fetch("http://127.0.0.1:5000/jobs")
     const data = await response.json()
     setJobs(data.jobs)
     console.log(data.jobs)
-  }
+  }*/
+
+  //Calls fetchJobs() whenever the page renders
+  useEffect(() => {
+    //fetchJobs()
+    const fetchedJobs = async () => {
+      try{
+        const response = await fetch("http://127.0.0.1:5000/jobs")
+        if (!response.ok) return
+
+        const data = await response.json()
+        setJobs(data.jobs)
+      } catch (error) {
+        console.log("Jobs not present")
+      }
+    }
+
+    fetchedJobs()
+  }, [])
+
 
   //return <JobList jobs={jobs} setJobs={setJobs}/>
   //return <CreateJob />

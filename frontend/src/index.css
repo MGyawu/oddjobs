@@ -47,6 +47,13 @@ button {
   transition: border-color 0.25s;
 }
 
+.jobsbutton {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  margin: 5px;
+  width: 100%;
+}
+
 .job {
   width: 1000px;
 }

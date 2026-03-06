@@ -21,7 +21,23 @@ const JobList = () =>{//{jobs, setJobs}) =>{
             </thead>*/}
             {/*<tbody>*/}
             {jobs.map((job) => (
-                <ul key={job.jobid} className="list">
+                <span key={job.jobid}>
+                    <button className="jobsbutton" onClick={() =>{
+                        setSingleJob(job)
+                        navigate(`/jobs/${job.jobid}`)
+                    }}>
+                        <span className="element">Job Poster: </span><span className="value">{job.username}</span>
+                        <span className="element">Address: </span><span className="value">{job.address}</span>
+                        <span className="element">Description: </span><span className="value">{job.description}</span>
+                        <span className="element">Fixer: </span><span className="value">{job.fixerName}</span>
+                        <span className="element">Status: </span><span className="value">{job.status}</span>
+                    </button>
+                </span>
+
+
+                //////////////////////////////////// dividing line ////////////////////////////////////////////
+                
+                /*<ul key={job.jobid} className="list">
                     <li>
                         <button className="jobsbutton" onClick={() =>{
                             setSingleJob(job)
@@ -35,7 +51,11 @@ const JobList = () =>{//{jobs, setJobs}) =>{
                             <span className="element">Status: </span><span className="value">{job.status}</span>
                         </button>
                     </li>
-                </ul>
+                </ul>*/
+
+
+                    ///////////////////////////////////////////// dividing line ///////////////////////
+                    
                     
                     /*<tr>
                     <button onClick={() => {
