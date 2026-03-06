@@ -54,6 +54,12 @@ button {
   width: 100%;
 }
 
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
 .job {
   width: 1000px;
 }

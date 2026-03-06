@@ -8,13 +8,11 @@ const CreateJob = ()=>{
     return <div>
         <h2>Create Job</h2>
         <h3>Username: {user.username}</h3>
-        <form>
-            <tr><label>Address: <input type="text"></input></label></tr>
-            <tr><label>Description: <textarea></textarea></label></tr>
-            <tr><label>Description: <textarea></textarea></label></tr>
-            <tr><label>Description: <textarea></textarea></label></tr>
-            <tr><label>Description: <textarea></textarea></label></tr>
+        <form className="create-form">
+            <label>Address: <input type="text"></input></label>
+            <label>Description: <textarea></textarea></label>
         </form>
+        <button>Create</button>
     </div>
 }
 

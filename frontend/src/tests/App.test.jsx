@@ -92,6 +92,18 @@ test('Render Job List page', () => {
       })
 })
 
+test('Render Create Jobs page', () => {
+    renderWithRoute('/create')
+
+    expect(screen.getByText(/Odd Jobs/)).toBeInTheDocument()
+    expect(screen.getByText(/Create a Job/)).toBeInTheDocument()
+    expect(screen.getByText(/My Jobs/)).toBeInTheDocument()
+    expect(screen.getByText(/Job List/)).toBeInTheDocument()
+    expect(screen.getByText(/Address/)).toBeInTheDocument()
+    expect(screen.getByText(/Description/)).toBeInTheDocument()
+    //expect(screen.getByText(/Create/)).toBeInTheDocument()
+
+  })
 /*
 test('Render Job List Page', () =>{
     renderWithRoute('/jobs');
