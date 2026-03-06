@@ -13,15 +13,31 @@ const JobList = () =>{//{jobs, setJobs}) =>{
     
     return <div>
         <h2>Job List</h2>
-        <table>
-            <thead>
+        {/*<table>*/}
+            {/*<thead>
                 <tr>
                     
                 </tr>
-            </thead>
-            <tbody>
-                {jobs.map((job) => (
-                    <tr>
+            </thead>*/}
+            {/*<tbody>*/}
+            {jobs.map((job) => (
+                <ul key={job.jobid} className="list">
+                    <li>
+                        <button className="jobsbutton" onClick={() =>{
+                            setSingleJob(job)
+                            navigate(`/jobs/${job.jobid}`)
+                        }
+                        }>
+                            <span className="element">Job Poster: </span><span className="value">{job.username}</span>
+                            <span className="element">Address: </span><span className="value">{job.address}</span>
+                            <span className="element">Description: </span><span className="value">{job.description}</span>
+                            <span className="element">Fixer: </span><span className="value">{job.fixerName}</span>
+                            <span className="element">Status: </span><span className="value">{job.status}</span>
+                        </button>
+                    </li>
+                </ul>
+                    
+                    /*<tr>
                     <button onClick={() => {
                         setSingleJob(job)
                         navigate(`/jobs/${job.jobid}`)
@@ -32,10 +48,10 @@ const JobList = () =>{//{jobs, setJobs}) =>{
                         <tr><td className="element">Fixer: </td><td className="value">{job.fixerName}</td></tr>
                         <tr><td className="element">Status: </td><td className="value">{job.status}</td></tr>
                     </button>
-                    </tr>
+                    </tr>*/
                 ))}
-            </tbody>
-        </table>
+            {/*</tbody>*/}
+        {/*</table>*/}
     </div>
 
 }

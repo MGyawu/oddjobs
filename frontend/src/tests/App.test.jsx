@@ -1,3 +1,4 @@
+import { createContext,useState, useEffect, useContext } from 'react'
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
@@ -9,15 +10,42 @@ import { CURRENTUSER, POSTEDJOBS } from './testdata';
 
 function renderWithRoute(route) {
   window.history.pushState({}, 'Test page', route);
+
+  /*
+  const [user, setUser] = useState(CURRENTUSER)
+  const [jobs, setJobs] = useState(POSTEDJOBS)
+  const [singleJob, setSingleJob] = useState({})
+
   return render(
-    <UserContext.Provider value={CURRENTUSER}>
-      <JobsContext.Provider value={POSTEDJOBS}>
-        <SingleJobContext.Provider value={{}}>
+    <UserContext.Provider value={{user, setUser}}>
+      <JobsContext.Provider value={{jobs, setJobs}}>
+        <SingleJobContext.Provider value={{singleJob, setSingleJob}}>
           <App />
         </SingleJobContext.Provider>
       </JobsContext.Provider>
     </UserContext.Provider>
-  )
+  )*/
+
+  function Wrapper({ children }) {
+    const [user, setUser] = useState(CURRENTUSER);
+    const [jobs, setJobs] = useState(POSTEDJOBS);
+    const [singleJob, setSingleJob] = useState({});
+    return (
+      <UserContext.Provider value={{ user, setUser }}>
+        <JobsContext.Provider value={{ jobs, setJobs }}>
+          <SingleJobContext.Provider value={{ singleJob, setSingleJob }}>
+            {children}
+          </SingleJobContext.Provider>
+        </JobsContext.Provider>
+      </UserContext.Provider>
+    );
+  }
+
+  return render(
+    <Wrapper>
+      <App />
+    </Wrapper>
+  );
 }
 
 test('Renders Sign up page on default route', () => {
@@ -41,6 +69,24 @@ test('Render Log In page', () => {
     expect(screen.getByText(/Log In/)).toBeInTheDocument()
     expect(screen.getByText(/Username/)).toBeInTheDocument()
     expect(screen.getByText(/Password/)).toBeInTheDocument()
+})
+
+test('Render Job List page', () => {
+    renderWithRoute('/jobs')
+
+    //screen.debug()
+
+    expect(screen.getByRole('heading', {name: /Job List/})).toBeInTheDocument()
+
+      POSTEDJOBS.map((job) => {
+        //expect(screen.getByRole('cell', {name: job.username})).toBeInTheDocument()
+        //expect(screen.getByText((content, element) => content.includes(job.username))).toBeInTheDocument()
+        expect(screen.getByRole('listitem', {name: job.username})).toBeInTheDocument()
+        expect(screen.getByText(job.address)).toBeInTheDocument()
+        expect(screen.getByText(job.description)).toBeInTheDocument()
+        expect(screen.getByText(job.fixerName)).toBeInTheDocument()
+        expect(screen.getByText(job.status)).toBeInTheDocument()
+      })
 })
 
 /*

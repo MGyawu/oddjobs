@@ -36,8 +36,8 @@ function App() {
   //setJobs(testdata)
   
   //Context Creation Test User
-  //const [user, setUser] = useState(CURRENTUSER)
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState(CURRENTUSER)
+  //const [user, setUser] = useState({})
   /*
   const [user, setUser] = useState({
     "id": "4206769",
@@ -49,8 +49,8 @@ function App() {
   })
     */
 
-  //const [jobs, setJobs] = useState(POSTEDJOBS)
-  const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState(POSTEDJOBS)
+  //const [jobs, setJobs] = useState([])
   /*
   const [jobs, setJobs] = useState([{"jobid": 2000, "username": "John Doe", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"},
   {"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"},
