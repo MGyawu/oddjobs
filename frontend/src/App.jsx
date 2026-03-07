@@ -100,7 +100,7 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
 
   //Router Creation
   return (
-    <div>
+    <span>
       {/*<NavBar />*/}
       <UserContext.Provider value={{user, setUser}}>
         <JobsContext.Provider value={{jobs, setJobs}}>
@@ -120,7 +120,7 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
           </SingleJobContext.Provider>
         </JobsContext.Provider>
       </UserContext.Provider>
-    </div>
+    </span>
   )
 }
 

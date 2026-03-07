@@ -1,5 +1,6 @@
 import { createContext,useState, useEffect, useContext } from 'react'
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { UserContext, JobsContext, SingleJobContext } from '../App'
@@ -10,21 +11,6 @@ import { CURRENTUSER, POSTEDJOBS } from './testdata';
 
 function renderWithRoute(route) {
   window.history.pushState({}, 'Test page', route);
-
-  /*
-  const [user, setUser] = useState(CURRENTUSER)
-  const [jobs, setJobs] = useState(POSTEDJOBS)
-  const [singleJob, setSingleJob] = useState({})
-
-  return render(
-    <UserContext.Provider value={{user, setUser}}>
-      <JobsContext.Provider value={{jobs, setJobs}}>
-        <SingleJobContext.Provider value={{singleJob, setSingleJob}}>
-          <App />
-        </SingleJobContext.Provider>
-      </JobsContext.Provider>
-    </UserContext.Provider>
-  )*/
 
   function Wrapper({ children }) {
     const [user, setUser] = useState(CURRENTUSER);
@@ -101,23 +87,33 @@ test('Render Create Jobs page', () => {
     expect(screen.getByText(/Job List/)).toBeInTheDocument()
     expect(screen.getByText(/Address/)).toBeInTheDocument()
     expect(screen.getByText(/Description/)).toBeInTheDocument()
-    //expect(screen.getByText(/Create/)).toBeInTheDocument()
 
   })
-/*
-test('Render Job List Page', () =>{
-    renderWithRoute('/jobs');
 
-    expect(screen.getByText(/Job List/i)).toBeInTheDocument()
+test('Render Page for a single job after that job is selected in Job List page', async () => {
+  renderWithRoute('/jobs')
 
-    POSTEDJOBS.map((job) => (
-        expect(screen.getByText(/{job.username}/)).toBeInTheDocument()
-        expect(screen.getByText(/Odd Jobs/)).toBeInTheDocument()
-        expect(screen.getByText(/Odd Jobs/)).toBeInTheDocument()
-        expect(screen.getByText(/Odd Jobs/)).toBeInTheDocument()
-        expect(screen.getByText(/Odd Jobs/)).toBeInTheDocument()
-    )
-    )
+  const CURRENTJOB = POSTEDJOBS[0]
+  const button = screen.getByRole('button', {name: RegExp(CURRENTJOB.username)})
+  await userEvent.click(button)
 
+  expect(screen.getByText(RegExp(CURRENTJOB.username))).toBeInTheDocument()
+  expect(screen.getByText(RegExp(CURRENTJOB.address))).toBeInTheDocument()
+  expect(screen.getByText(RegExp(CURRENTJOB.description))).toBeInTheDocument()
+  expect(screen.getByText(RegExp(CURRENTJOB.status))).toBeInTheDocument()
+  expect(screen.getByText(RegExp(CURRENTJOB.jobid))).toBeInTheDocument()
+
+}
+
+)
+
+test('Render Job List Page and Create Job Page when clicking on the corresponding button why the other page is currently rendered', async () => {
+  renderWithRoute('/jobs')
+  let button = screen.getByRole('button', {name: /Create a Job/})
+  await userEvent.click(button)
+  expect(window.location.pathname).toBe('/create')
+
+  button = screen.getByRole('button', {name: /Job List/})
+  await userEvent.click(button)
+  expect(window.location.pathname).toBe('/jobs')
 })
-    */

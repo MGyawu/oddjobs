@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@testing-library/user-event": "^14.6.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.13.0"
@@ -36,7 +37,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": ["<rootDir>/src/tests/setupTests.jsx"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/tests/setupTests.jsx"
+    ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy"
     }

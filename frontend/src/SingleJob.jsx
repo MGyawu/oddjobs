@@ -5,15 +5,17 @@ const Job = () => {//{singleJob, setSingleJob}) =>{
 
     const {singleJob, setSingleJob} = useContext(SingleJobContext)
 
-    return <div>
+    return <span>
         <h2>Job Info</h2>
-        <tr><td className="element">Job Poster: </td><td className="value">{singleJob.username}</td></tr>
-        <tr><td className="element">Address: </td><td className="value">{singleJob.address}</td></tr>
-        <tr><td className="element">Description: </td><td className="value">{singleJob.description}</td></tr>
-        <tr><td className="element">Fixer: </td><td className="value">{singleJob.fixerName}</td></tr>
-        <tr><td className="element">Status: </td><td className="value">{singleJob.status}</td></tr>
-        <tr><td className="element">Job ID: </td><td className="value">{singleJob.jobid}</td></tr>
-    </div>
+        <div className="jobsbutton">
+            <span className="element">Job Poster: </span><span className="value">{singleJob.username}</span>
+            <span className="element">Address: </span><span className="value">{singleJob.address}</span>
+            <span className="element">Description: </span><span className="value">{singleJob.description}</span>
+            <span className="element">Fixer: </span><span className="value">{singleJob.fixerName}</span>
+            <span className="element">Status: </span><span className="value">{singleJob.status}</span>
+            <span className="element">Job ID: </span><span className="value">{singleJob.jobid}</span>
+        </div>
+    </span>
 }
 
 export default Job
