@@ -4,6 +4,7 @@ from extensions import db
 #Defines the fields that is object will have
 class User(db.Model):
     #userid = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'user'
     userid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     password = db.Column(db.String(100), unique=False, nullable=False)
@@ -27,6 +28,7 @@ class User(db.Model):
 #Defines the fields that is object will have
 class Job(db.Model):
     #jobid = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'job'
     jobid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
     address = db.Column(db.String(100), unique=False, nullable=False)

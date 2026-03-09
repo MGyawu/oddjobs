@@ -4,5 +4,6 @@ __pycache__/
 *.pyd
 *.db
 .venv/
+*venv*
 .pytest_cache/
 backend/
