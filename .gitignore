@@ -5,6 +5,6 @@ __pycache__/
 *.db
 testdata.json
 .venv/
-venv
+*venv*
 .pytest_cache/
 backend/
