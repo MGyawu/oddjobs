@@ -24,14 +24,19 @@ def create_app(database_uri=None):
     #Create Database instance
     db.init_app(app)
 
-    app.register_blueprint(approutes)
+    app.register_blueprint(approutes, url_prefix="/api")
     return app
 
 #Run flask application
 if __name__ == "__main__":
-    #initialize database
-    app=create_app(os.environ.get('DATABASE_URL'))
-    time.sleep(5)
+    import sys
+
+    if "test" in sys.argv:
+        app = create_app("sqlite:///:memory:")
+    else:
+        #initialize database
+        app=create_app(os.environ.get('DATABASE_URL'))
+    #time.sleep(5)
     with app.app_context():
         print("App Created")
         db.create_all()

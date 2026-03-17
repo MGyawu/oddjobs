@@ -1,21 +1,21 @@
 import { createContext,useState, useEffect, useContext } from 'react'
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom';
-import App from '../App';
+import { MemoryRouter } from 'react-router-dom'
+import App from '../App'
 import { UserContext, JobsContext, SingleJobContext } from '../App'
-import { CURRENTUSER, POSTEDJOBS } from './testdata';
+import { CURRENTUSER, POSTEDJOBS } from './testdata'
 /**
  * @jest-environment jsdom
  */
 
 function renderWithRoute(route) {
-  window.history.pushState({}, 'Test page', route);
+  window.history.pushState({}, 'Test page', route)
 
   function Wrapper({ children }) {
-    const [user, setUser] = useState(CURRENTUSER);
-    const [jobs, setJobs] = useState(POSTEDJOBS);
-    const [singleJob, setSingleJob] = useState({});
+    const [user, setUser] = useState(CURRENTUSER)
+    const [jobs, setJobs] = useState(POSTEDJOBS)
+    const [singleJob, setSingleJob] = useState({})
     return (
       <UserContext.Provider value={{ user, setUser }}>
         <JobsContext.Provider value={{ jobs, setJobs }}>
@@ -24,14 +24,14 @@ function renderWithRoute(route) {
           </SingleJobContext.Provider>
         </JobsContext.Provider>
       </UserContext.Provider>
-    );
+    )
   }
 
   return render(
     <Wrapper>
       <App />
     </Wrapper>
-  );
+  )
 }
 
 test('Renders Sign up page on default route', () => {

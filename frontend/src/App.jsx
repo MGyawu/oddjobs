@@ -4,7 +4,6 @@
 import './App.css'
 import JobList from './JobList'
 import CreateJob from './CreateJob'
-import SingleJob from './SingleJob'
 import SignUp from './SignUp'
 import NavBar from './NavBar'
 import LogIn from './LogIn'
@@ -77,9 +76,10 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
     //fetchJobs()
+    //console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
     const fetchedJobs = async () => {
       try{
-        const response = await fetch("http://127.0.0.1:5000/jobs")
+        const response = await fetch("/api/jobs")
         if (!response.ok) return
 
         const data = await response.json()
