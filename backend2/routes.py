@@ -53,8 +53,8 @@ def create_user():
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-    #return message for the newly created job
-    return jsonify({"message": "User created"}), 201
+    #return message for the newly created user
+    return jsonify({"message": "User created", "userid": userid}), 201
 
 #Get Jobs from a database
 @approutes.route("/jobs", methods=["GET"])
