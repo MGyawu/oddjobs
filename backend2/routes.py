@@ -56,6 +56,21 @@ def create_user():
     #return message for the newly created user
     return jsonify({"message": "User created", "userid": userid}), 201
 
+#Authenticates User login info
+@approutes.route("/users/login", methods=["POST"])
+def authenticate_login():
+    user_name = request.json.get("username")
+    password = request.json.get("password")
+
+    if not user_name or not password: 
+        return jsonify({"message" : "Username or Password not found"}), 400
+
+    user = User.query.filter_by(user_name=user_name, password=password).first()
+    if not user:
+        return jsonify({"message": "Invalid Username or Password"}), 401
+
+    return jsonify(user.to_json()), 200
+
 #Get Jobs from a database
 @approutes.route("/jobs", methods=["GET"])
 def get_jobs():

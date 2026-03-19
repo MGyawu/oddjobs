@@ -72,6 +72,10 @@ test('Signing up creates a user saved in the database', async() => {
     //Locate the username on the page
     expect(screen.getByText(/TestUser/)).toBeInTheDocument()
 
+    // Verify the mock was called and the real API was not hit
+    expect(globalThis.fetch).toHaveBeenCalledTimes(3)
+    //console.log(globalThis.fetch.mock.calls)
+
 })
 
 test('User creates a job and is added tp Job List', async() =>{

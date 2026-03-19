@@ -50,6 +50,63 @@ def test_get_user(client,app, test_user_data):
     assert response.status_code == 404
     assert data["message"] == "User not found"
 
+def test_authenticate_login(client,app, test_user_data):
+    response = client.post("/api/users", json=test_user_data[0])
+    assert response.status_code == 201
+    with app.app_context():
+        user = User.query.filter_by(user_name=test_user_data[0]["username"]).first()
+
+    #Successful authentication
+    response = client.post("/api/users/login", json={
+        "username": test_user_data[0]["username"],
+        "password": test_user_data[0]["password"]
+    })
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["username"] == user.user_name
+    assert data["password"] == user.password
+    assert data["firstName"] == user.first_name
+    assert data["lastName"] == user.last_name
+    assert data["email"] == user.email
+    assert data["id"] == user.userid
+
+    #Username no password
+    response = client.post("/api/users/login", json={
+        "username": test_user_data[0]["username"],
+        "password": None
+    })
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["message"] == "Username or Password not found"
+
+    #Password no username
+    response = client.post("/api/users/login", json={
+        "username": None,
+        "password": test_user_data[0]["password"]
+    })
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["message"] == "Username or Password not found"
+
+    #Incorrect Username
+    response = client.post("/api/users/login", json={
+        "username": "Bad Username",
+        "password": test_user_data[0]["password"]
+    })
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["message"] == "Invalid Username or Password"
+
+    #Incorrect Password
+    response = client.post("/api/users/login", json={
+        "username": test_user_data[0]["username"],
+        "password": "Bad Password"
+    })
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["message"] == "Invalid Username or Password"
+
+
 
 ### Test Jobs Functions/Routes ###
 
