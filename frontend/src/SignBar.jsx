@@ -44,8 +44,28 @@ const SignBar = () =>{
         }
     }
 
-    const NavFromLogIn = () => {
+    const NavFromLogIn = async () => {
         if (location.pathname === "/login"){
+
+            try{
+                const response = await fetch ("/api/users/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: user.username,
+                        password: user.password
+                    })
+                })
+                const data = await response.json()
+                if (!response.ok) {
+                    alert(data.message)
+                    return
+                }
+                setUser(data)
+            } catch (error){
+                alert("Authentication Error, Please try again")
+            }
+
             navigate('/jobs')
             return
         }
