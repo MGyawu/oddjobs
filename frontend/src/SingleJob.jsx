@@ -1,9 +1,27 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
+import { useParams } from "react-router-dom"
 import { SingleJobContext } from "./App"
 
 const Job = () => {//{singleJob, setSingleJob}) =>{
 
     const {singleJob, setSingleJob} = useContext(SingleJobContext)
+    const { jobid } = useParams()
+
+    useEffect(() => {
+        if (singleJob.jobid === Number(jobid) || singleJob.jobid === jobid) return
+
+        const fetchJob = async () => {
+            try {
+                const response = await fetch(`/api/jobs/id/${jobid}`)
+                if (!response.ok) return
+                const data = await response.json()
+                setSingleJob(data)
+            } catch (error) {
+                console.log("Job not found")
+            }
+        }
+        fetchJob()
+    }, [jobid])
 
     return <span>
         <h2>Job Info</h2>

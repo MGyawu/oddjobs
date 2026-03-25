@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 const CreateJob = ()=>{
 
     const navigate = useNavigate()
-    const {user, setUser} = useContext(UserContext)
+    const {user, setUserState} = useContext(UserContext)
     const {singleJob, setSingleJob} = useContext(SingleJobContext)
 
     const handleChange = (field, value) => {

@@ -4,7 +4,7 @@ import { UserContext } from "./App"
 
 const SignBar = () =>{
     const navigate = useNavigate()
-    const { user, setUser } = useContext(UserContext)
+    const { user, setUserState } = useContext(UserContext)
 
     if (location.pathname === "/create" || location.pathname.includes("/jobs")) return null//location.pathname === "/jobs") return null
     
@@ -30,7 +30,7 @@ const SignBar = () =>{
                 const userResponse = await fetch(`/api/users/${data.userid}`)
                 if (userResponse.ok) {
                     const userData = await userResponse.json()
-                    setUser(userData)
+                    setUserState(userData)
                 }
                 navigate('/jobs')
             } catch (error) {
@@ -61,7 +61,7 @@ const SignBar = () =>{
                     alert(data.message)
                     return
                 }
-                setUser(data)
+                setUserState(data)
             } catch (error){
                 alert("Authentication Error, Please try again")
             }

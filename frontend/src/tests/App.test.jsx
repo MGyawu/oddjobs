@@ -13,11 +13,11 @@ function renderWithRoute(route) {
   window.history.pushState({}, 'Test page', route)
 
   function Wrapper({ children }) {
-    const [user, setUser] = useState(CURRENTUSER)
+    const [user, setUserState] = useState(CURRENTUSER)
     const [jobs, setJobs] = useState(POSTEDJOBS)
     const [singleJob, setSingleJob] = useState({})
     return (
-      <UserContext.Provider value={{ user, setUser }}>
+      <UserContext.Provider value={{ user, setUserState }}>
         <JobsContext.Provider value={{ jobs, setJobs }}>
           <SingleJobContext.Provider value={{ singleJob, setSingleJob }}>
             {children}

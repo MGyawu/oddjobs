@@ -13,6 +13,11 @@ async function renderWithRoute(route) {
     })
 }
 
+afterEach(() => {
+    sessionStorage.clear()
+    cleanup()
+})
+
 test('Signing up creates a user saved and returns error when sign up is done incorrectly', async() => {
     // Mock fetch to simulate successful user creation, get_user, and jobs endpoint
     
@@ -393,3 +398,314 @@ test('My Jobs button only shows the logged users jobs', async() => {
     expect(jobButtons[0]).toHaveTextContent("50 My Rd")
     expect(jobButtons[0]).toHaveTextContent("fix sink")
 })
+
+test('My Jobs button shows alert when no user is logged in', async() => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
+
+    globalThis.fetch = jest.fn((url) => {
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await renderWithRoute('/jobs')
+
+    const myJobsButton = await screen.findByRole('button', { name: /My Jobs/i })
+    await userEvent.click(myJobsButton)
+
+    expect(alertMock).toHaveBeenCalledWith("You are not logged in. Log in or create an account.")
+    expect(location.pathname).toBe('/jobs')
+
+    alertMock.mockRestore()
+})
+
+test('Clicking a job on the Job List page opens the Single Job page with all job details', async() => {
+    const selectedJob = { jobid: 2000, username: "John Doe", address: "42 Wallaby Way, Sydney", description: "broken door", fixerName: "placeholder", status: "open" }
+
+    globalThis.fetch = jest.fn((url) => {
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: POSTEDJOBS }),
+            })
+        }
+        if (url === "/api/jobs/id/2000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(selectedJob),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await renderWithRoute('/jobs')
+
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    await userEvent.click(jobButtons[0])
+
+    expect(location.pathname).toBe('/jobs/job/2000')
+
+    const jobInfo = await screen.findByText(/Job Info/i)
+    expect(jobInfo).toBeInTheDocument()
+    expect(screen.getByText(selectedJob.username)).toBeInTheDocument()
+    expect(screen.getByText(selectedJob.address)).toBeInTheDocument()
+    expect(screen.getByText(selectedJob.description)).toBeInTheDocument()
+    expect(screen.getByText(selectedJob.fixerName)).toBeInTheDocument()
+    expect(screen.getByText(selectedJob.status)).toBeInTheDocument()
+    expect(screen.getByText(String(selectedJob.jobid))).toBeInTheDocument()
+})
+
+test('User creates a job, clicks it, completes it, and status updates to Complete', async() => {
+    const createdJob = { jobid: 5000, username: "TestUser", address: "10 Build St", description: "replace tiles", fixerName: "placeholder", status: "open" }
+
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "User created", userid: "test-uuid-456" }),
+            })
+        }
+        if (url === "/api/users/test-uuid-456") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "test-uuid-456",
+                    username: "TestUser",
+                    password: "TestPassword",
+                    firstName: "TestFirst",
+                    lastName: "TestLast",
+                    email: "test@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "Job created", jobid: 5000 }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [createdJob] }),
+            })
+        }
+        if (url === "/api/jobs/id/5000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(createdJob),
+            })
+        }
+        if (url === "/api/jobs/users/TestUser/5000" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "Job has been completed" }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    // Sign up
+    await renderWithRoute('/')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'TestUser')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'TestPassword')
+    await userEvent.clear(inputs[2])
+    await userEvent.type(inputs[2], 'TestFirst')
+    await userEvent.clear(inputs[3])
+    await userEvent.type(inputs[3], 'TestLast')
+    await userEvent.clear(inputs[4])
+    await userEvent.type(inputs[4], 'test@example.com')
+
+    const signUpButton = screen.getByText(/Sign Up/i)
+    await userEvent.click(signUpButton)
+
+    // Navigate to Create Job page
+    const createButton = await screen.findByText(/Create a Job/i)
+    await userEvent.click(createButton)
+
+    // Fill in the job form
+    const addressInput = screen.getByLabelText(/Address/i)
+    const descriptionInput = screen.getByLabelText(/Description/i)
+    await userEvent.type(addressInput, '10 Build St')
+    await userEvent.type(descriptionInput, 'replace tiles')
+
+    // Submit the job
+    const createJobBtn = screen.getByText("Create")
+    await userEvent.click(createJobBtn)
+
+    // Navigate to Job List
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    // Click the created job
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    expect(jobButtons).toHaveLength(1)
+    await userEvent.click(jobButtons[0])
+
+    // Verify on Single Job page
+    expect(location.pathname).toBe('/jobs/job/5000')
+    const jobInfo = await screen.findByText(/Job Info/i)
+    expect(jobInfo).toBeInTheDocument()
+    expect(screen.getByText("open")).toBeInTheDocument()
+
+    // Click Complete button
+    const completeButton = await screen.findByRole('button', { name: /Complete/i })
+    await userEvent.click(completeButton)
+
+    // Verify status updated to Complete
+    const statusValue = screen.getByText("Complete", { selector: '.value' })
+    expect(statusValue).toBeInTheDocument()
+    expect(screen.queryByText("open")).not.toBeInTheDocument()
+})
+
+test('A different user can become the fixer for another users job', async() => {
+    const createdJob = { jobid: 6000, username: "Creator", address: "5 Maker Ave", description: "fix gutter", fixerName: "placeholder", status: "open" }
+
+    globalThis.fetch = jest.fn((url, options) => {
+        // Creator sign up
+        if (url === "/api/users" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "User created", userid: "creator-uuid" }),
+            })
+        }
+        if (url === "/api/users/creator-uuid") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "creator-uuid",
+                    username: "Creator",
+                    password: "Pass123",
+                    firstName: "Cre",
+                    lastName: "Ator",
+                    email: "creator@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "Job created", jobid: 6000 }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [createdJob] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    // Creator signs up
+    await renderWithRoute('/')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'Creator')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'Pass123')
+    await userEvent.clear(inputs[2])
+    await userEvent.type(inputs[2], 'Cre')
+    await userEvent.clear(inputs[3])
+    await userEvent.type(inputs[3], 'Ator')
+    await userEvent.clear(inputs[4])
+    await userEvent.type(inputs[4], 'creator@example.com')
+
+    const signUpButton = screen.getByText(/Sign Up/i)
+    await userEvent.click(signUpButton)
+
+    // Creator creates a job
+    const createButton = await screen.findByText(/Create a Job/i)
+    await userEvent.click(createButton)
+
+    const addressInput = screen.getByLabelText(/Address/i)
+    const descriptionInput = screen.getByLabelText(/Description/i)
+    await userEvent.type(addressInput, '5 Maker Ave')
+    await userEvent.type(descriptionInput, 'fix gutter')
+
+    const createJobBtn = screen.getByText("Create")
+    await userEvent.click(createJobBtn)
+
+    // Now a different user (Fixer) logs in
+    cleanup()
+    sessionStorage.clear()
+
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users/login" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "fixer-uuid",
+                    username: "FixerUser",
+                    password: "FixPass",
+                    firstName: "Fix",
+                    lastName: "Er",
+                    email: "fixer@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [createdJob] }),
+            })
+        }
+        if (url === "/api/jobs/id/6000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(createdJob),
+            })
+        }
+        if (url === "/api/jobs/assign/fixer/6000/FixerUser" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "The fixer for the job has been assigned." }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await renderWithRoute('/login')
+
+    inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'FixerUser')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'FixPass')
+
+    const loginButton = screen.getByText(/Log In/i)
+    await userEvent.click(loginButton)
+
+    // Navigate to Job List
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    // Click the job created by Creator
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    expect(jobButtons).toHaveLength(1)
+    expect(jobButtons[0]).toHaveTextContent("Creator")
+    await userEvent.click(jobButtons[0])
+
+    // Verify on Single Job page
+    expect(location.pathname).toBe('/jobs/job/6000')
+    await screen.findByText(/Job Info/i)
+    expect(screen.getByText("placeholder")).toBeInTheDocument()
+
+    // Click Become fixer button
+    const fixerButton = await screen.findByRole('button', { name: /Become fixer/i })
+    await userEvent.click(fixerButton)
+
+    // Verify fixer updated to FixerUser
+    expect(screen.getByText("FixerUser")).toBeInTheDocument()
+    expect(screen.queryByText("placeholder")).not.toBeInTheDocument()
+})
+

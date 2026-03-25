@@ -5,10 +5,10 @@ import { UserContext } from "./App"
 const SignUp = () =>{
     //return <div>Sign Up Page Placeholder</div>
 
-    const { user, setUser } = useContext(UserContext);
+    const { user, setUserState } = useContext(UserContext);
 
     const handleChange = (field, value) => {
-        setUser(prev => ({ ...prev, [field]: value }));
+        setUserState(prev => ({ ...prev, [field]: value }));
     }
 
     return (

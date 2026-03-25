@@ -9,6 +9,7 @@ import NavBar from './NavBar'
 import LogIn from './LogIn'
 import SignBar from './SignBar'
 import Job from './SingleJob'
+import SingleJobBar from './SingleJobBar'
 //import testdata from './testdata.json'
 
 //Router Creation
@@ -27,51 +28,26 @@ export const SingleJobContext = createContext()
 function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
   
   //Define state that stores jobs
-  //const [jobs, setJobs] = useState([])//([{"jobid": 2000, "username": "dumb", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"}])
-  
-  //const [jobs, setJobs] = useState([testdata])
-
-  //console.log(testdata)
-  //setJobs(testdata)
-  
+ 
   //Context Creation Test User
-  const [user, setUser] = useState(CURRENTUSER)
-  //const [user, setUser] = useState({})
-  /*
-  const [user, setUser] = useState({
-    "id": "4206769",
-    "username" : "Doc Martin",
-    "password" : "pa$$w0rd",
-    "firstName" : "Doc",
-    "lastName" : "Martin",
-    "email" : "Doc.Martin@hotmail.org"
+  const [user, _setUserState] = useState(() => {
+    const saved = sessionStorage.getItem("user")
+    return saved ? JSON.parse(saved) : {}
   })
-    */
 
-  const [jobs, setJobs] = useState(POSTEDJOBS)
-  //const [jobs, setJobs] = useState([])
-  /*
-  const [jobs, setJobs] = useState([{"jobid": 2000, "username": "John Doe", "address": "42 Wallaby Way, Sydney", "description": "broken door", "fixername": "placeholder", "status":"open"},
-  {"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"},
-  {"jobid": 2002, "username": "Bob Smith", "address": "456 Elm St, Othertown", "description": "clogged drain", "fixername": "placeholder", "status":"open"},
-  {"jobid": 2003, "username": "Alice Johnson", "address": "789 Oak St, Sometown", "description": "broken window", "fixername": "placeholder", "status":"open"},
-  {"jobid": 2004, "username": "Charlie Brown", "address": "321 Pine St, Anycity", "description": "squeaky door", "fixername": "placeholder", "status":"open"},
-  {"jobid": 2005, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "A fire truck crashed into my home", "fixername": "placeholder", "status":"open"}
-  ])
-  */
-
-  //const [singleJob, setSingleJob] = useState([])
-  //const [singleJob, setSingleJob] = useState({"jobid": 2001, "username": "Jane Doe", "address": "123 Main St, Anytown", "description": "leaky faucet", "fixername": "placeholder", "status":"open"})
+  const setUserState = (value) => {
+    _setUserState(prev => {
+      const next = typeof value === 'function' ? value(prev) : value
+      sessionStorage.setItem("user", JSON.stringify(next))
+      return next
+    })
+  }
+  
+  const [jobs, setJobs] = useState([])
+ 
   const [singleJob, setSingleJob] = useState({})
 
   
-  //Send request to backend to receive list of jobs
-  /*const fetchJobs = async () => {
-    const response = await fetch("http://127.0.0.1:5000/jobs")
-    const data = await response.json()
-    setJobs(data.jobs)
-    console.log(data.jobs)
-  }*/
 
   //Calls fetchJobs() whenever the page renders
   useEffect(() => {
@@ -92,17 +68,11 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
     fetchedJobs()
   }, [])
 
-
-  //return <JobList jobs={jobs} setJobs={setJobs}/>
-  //return <CreateJob />
-  //return <SingleJob singleJob={singleJob} setSingleJob={setSingleJob}/>
-  //return <SignUp />
-
   //Router Creation
   return (
     <span>
       {/*<NavBar />*/}
-      <UserContext.Provider value={{user, setUser}}>
+      <UserContext.Provider value={{user, setUserState}}>
         <JobsContext.Provider value={{jobs, setJobs}}>
           <SingleJobContext.Provider value = {{singleJob, setSingleJob}}>
             <BrowserRouter>
@@ -113,10 +83,11 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
                 <Route path='/create' element={<CreateJob />}/>
                 {/*<Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>*/}
                 <Route path='/jobs' element={<JobList />}/>
-                <Route path='/jobs/:username' element={<JobList />}/>
-                <Route path='/jobs/:jobid' element={<Job />} />
+                <Route path='/jobs/user/:username' element={<JobList />}/>
+                <Route path='/jobs/job/:jobid' element={<Job />} />
               </Routes>
               <SignBar />
+              <SingleJobBar />
             </BrowserRouter>
           </SingleJobContext.Provider>
         </JobsContext.Provider>
