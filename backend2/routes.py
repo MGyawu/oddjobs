@@ -145,7 +145,7 @@ def create_job():
 
     if not user_name or not address or not description or not status:
         return (
-            jsonify({"message": "You must include an address and description"}),
+            jsonify({"message": "You must be signed in and include an address and description"}),
             400,
             )
 

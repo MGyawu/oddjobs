@@ -113,6 +113,7 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
                 <Route path='/create' element={<CreateJob />}/>
                 {/*<Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>*/}
                 <Route path='/jobs' element={<JobList />}/>
+                <Route path='/jobs/:username' element={<JobList />}/>
                 <Route path='/jobs/:jobid' element={<Job />} />
               </Routes>
               <SignBar />
