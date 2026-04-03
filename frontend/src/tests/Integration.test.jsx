@@ -709,3 +709,526 @@ test('A different user can become the fixer for another users job', async() => {
     expect(screen.queryByText("placeholder")).not.toBeInTheDocument()
 })
 
+test('Become fixer shows alert when API returns error', async() => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
+    const job = { jobid: 7000, username: "Owner", address: "1 Error St", description: "bad job", fixerName: "placeholder", status: "open" }
+
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users/login" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "fixer-uuid",
+                    username: "FixerUser",
+                    password: "FixPass",
+                    firstName: "Fix",
+                    lastName: "Er",
+                    email: "fixer@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job] }),
+            })
+        }
+        if (url === "/api/jobs/id/7000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(job),
+            })
+        }
+        if (url === "/api/jobs/assign/fixer/7000/FixerUser" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ message: "Job not found" }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    // Log in as FixerUser
+    await renderWithRoute('/login')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'FixerUser')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'FixPass')
+
+    const loginButton = screen.getByText(/Log In/i)
+    await userEvent.click(loginButton)
+
+    // Navigate to Job List and click the job
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    await userEvent.click(jobButtons[0])
+
+    await screen.findByText(/Job Info/i)
+
+    // Click Become fixer — API returns error
+    const fixerButton = await screen.findByRole('button', { name: /Become fixer/i })
+    await userEvent.click(fixerButton)
+
+    // Verify alert shown with API error message
+    expect(alertMock).toHaveBeenCalledWith("Job not found")
+
+    // Verify fixer was NOT updated
+    expect(screen.getByText("placeholder")).toBeInTheDocument()
+
+    // Now test network failure
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/jobs/assign/fixer/7000/FixerUser" && options?.method === "PUT") {
+            return Promise.reject(new Error("Network error"))
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await userEvent.click(fixerButton)
+
+    // Verify catch block alert
+    expect(alertMock).toHaveBeenCalledWith("Error assigning fixer. Please try again")
+
+    // Verify fixer still not updated
+    expect(screen.getByText("placeholder")).toBeInTheDocument()
+
+    alertMock.mockRestore()
+})
+
+test('Complete job shows alert when API returns error', async() => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
+    const job = { jobid: 8000, username: "TestUser", address: "2 Fail Rd", description: "broken pipe", fixerName: "placeholder", status: "open" }
+
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users/login" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "test-uuid",
+                    username: "TestUser",
+                    password: "TestPass",
+                    firstName: "Test",
+                    lastName: "User",
+                    email: "test@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job] }),
+            })
+        }
+        if (url === "/api/jobs/id/8000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(job),
+            })
+        }
+        if (url === "/api/jobs/users/TestUser/8000" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ message: "Jobs not found" }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    // Log in as the job owner
+    await renderWithRoute('/login')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'TestUser')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'TestPass')
+
+    const loginButton = screen.getByText(/Log In/i)
+    await userEvent.click(loginButton)
+
+    // Navigate to Job List and click the job
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    await userEvent.click(jobButtons[0])
+
+    await screen.findByText(/Job Info/i)
+
+    // Click Complete — API returns error
+    const completeButton = await screen.findByRole('button', { name: /Complete/i })
+    await userEvent.click(completeButton)
+
+    // Verify alert shown with API error message
+    expect(alertMock).toHaveBeenCalledWith("Jobs not found")
+
+    // Verify status was NOT updated
+    expect(screen.getByText("open")).toBeInTheDocument()
+
+    // Now test network failure
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/jobs/users/TestUser/8000" && options?.method === "PUT") {
+            return Promise.reject(new Error("Network error"))
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await userEvent.click(completeButton)
+
+    // Verify catch block alert
+    expect(alertMock).toHaveBeenCalledWith("Error completing job. Please try again.")
+
+    // Verify status still not updated
+    expect(screen.getByText("open")).toBeInTheDocument()
+
+    alertMock.mockRestore()
+})
+
+test('User2 becomes fixer for one of User1 jobs and sees only that job under My Work', async() => {
+    const job1 = { jobid: 9000, username: "User1", address: "10 Alpha St", description: "fix roof", fixerName: "placeholder", status: "open" }
+    const job2 = { jobid: 9001, username: "User1", address: "20 Beta Ave", description: "paint wall", fixerName: "placeholder", status: "open" }
+
+    // Phase 1: User1 signs up and creates 2 jobs
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "User created", userid: "user1-uuid" }),
+            })
+        }
+        if (url === "/api/users/user1-uuid") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "user1-uuid",
+                    username: "User1",
+                    password: "Pass1",
+                    firstName: "First1",
+                    lastName: "Last1",
+                    email: "user1@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs" && options?.method === "POST") {
+            const body = JSON.parse(options.body)
+            if (body.description === "fix roof") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ message: "Job created", jobid: 9000 }),
+                })
+            }
+            if (body.description === "paint wall") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ message: "Job created", jobid: 9001 }),
+                })
+            }
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job1, job2] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    // User1 signs up
+    await renderWithRoute('/')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'User1')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'Pass1')
+    await userEvent.clear(inputs[2])
+    await userEvent.type(inputs[2], 'First1')
+    await userEvent.clear(inputs[3])
+    await userEvent.type(inputs[3], 'Last1')
+    await userEvent.clear(inputs[4])
+    await userEvent.type(inputs[4], 'user1@example.com')
+
+    const signUpButton = screen.getByText(/Sign Up/i)
+    await userEvent.click(signUpButton)
+
+    // User1 creates job 1
+    const createButton = await screen.findByText(/Create a Job/i)
+    await userEvent.click(createButton)
+
+    let addressInput = screen.getByLabelText(/Address/i)
+    let descriptionInput = screen.getByLabelText(/Description/i)
+    await userEvent.type(addressInput, '10 Alpha St')
+    await userEvent.type(descriptionInput, 'fix roof')
+
+    const createJobBtn1 = screen.getByText("Create")
+    await userEvent.click(createJobBtn1)
+
+    // User1 creates job 2
+    const createButton2 = await screen.findByText(/Create a Job/i)
+    await userEvent.click(createButton2)
+
+    addressInput = screen.getByLabelText(/Address/i)
+    descriptionInput = screen.getByLabelText(/Description/i)
+    await userEvent.type(addressInput, '20 Beta Ave')
+    await userEvent.type(descriptionInput, 'paint wall')
+
+    const createJobBtn2 = screen.getByText("Create")
+    await userEvent.click(createJobBtn2)
+
+    // Phase 2: User2 logs in
+    cleanup()
+    sessionStorage.clear()
+
+    const fixedJob1 = { ...job1, fixerName: "User2" }
+
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users/login" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "user2-uuid",
+                    username: "User2",
+                    password: "Pass2",
+                    firstName: "First2",
+                    lastName: "Last2",
+                    email: "user2@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job1, job2] }),
+            })
+        }
+        if (url === "/api/jobs/id/9000") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(job1),
+            })
+        }
+        if (url === "/api/jobs/assign/fixer/9000/User2" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "The fixer for the job has been assigned." }),
+            })
+        }
+        if (url === "/api/jobs/fixer/User2") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [fixedJob1] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await renderWithRoute('/login')
+
+    inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'User2')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'Pass2')
+
+    const loginButton = screen.getByText(/Log In/i)
+    await userEvent.click(loginButton)
+
+    // Navigate to Job List — should see both jobs
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    expect(jobButtons).toHaveLength(2)
+
+    // Click first job (job1)
+    await userEvent.click(jobButtons[0])
+
+    expect(location.pathname).toBe('/jobs/job/9000')
+    await screen.findByText(/Job Info/i)
+
+    // Click Become fixer
+    const fixerButton = await screen.findByRole('button', { name: /Become fixer/i })
+    await userEvent.click(fixerButton)
+
+    // Verify fixer updated
+    expect(screen.getByText("User2")).toBeInTheDocument()
+
+    // Navigate back to Job List first (My Work doesn't navigate)
+    const jobListButton2 = screen.getByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton2)
+
+    await screen.findAllByRole('button', { name: /Job Poster:/i })
+
+    // Click My Work — should only show the job User2 is fixer for
+    const myWorkButton = screen.getByRole('button', { name: /My Work/i })
+    await userEvent.click(myWorkButton)
+
+    const workJobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    expect(workJobButtons).toHaveLength(1)
+    expect(workJobButtons[0]).toHaveTextContent("User1")
+    expect(workJobButtons[0]).toHaveTextContent("10 Alpha St")
+    expect(workJobButtons[0]).toHaveTextContent("fix roof")
+    expect(workJobButtons[0]).toHaveTextContent("User2")
+})
+
+test('User2 becomes fixer flow shows errors for API failure and network failure', async() => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
+    const job1 = { jobid: 9500, username: "User1", address: "10 Alpha St", description: "fix roof", fixerName: "placeholder", status: "open" }
+    const job2 = { jobid: 9501, username: "User1", address: "20 Beta Ave", description: "paint wall", fixerName: "placeholder", status: "open" }
+
+    // User2 logs in and sees both jobs
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/users/login" && options?.method === "POST") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    id: "user2-uuid",
+                    username: "User2",
+                    password: "Pass2",
+                    firstName: "First2",
+                    lastName: "Last2",
+                    email: "user2@example.com",
+                }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job1, job2] }),
+            })
+        }
+        if (url === "/api/jobs/id/9500") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(job1),
+            })
+        }
+        if (url === "/api/jobs/assign/fixer/9500/User2" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ message: "Job not found" }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await renderWithRoute('/login')
+
+    let inputs = screen.getAllByRole('textbox')
+    await userEvent.clear(inputs[0])
+    await userEvent.type(inputs[0], 'User2')
+    await userEvent.clear(inputs[1])
+    await userEvent.type(inputs[1], 'Pass2')
+
+    const loginButton = screen.getByText(/Log In/i)
+    await userEvent.click(loginButton)
+
+    const jobListButton = await screen.findByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton)
+
+    const jobButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    await userEvent.click(jobButtons[0])
+
+    await screen.findByText(/Job Info/i)
+
+    // Become fixer — API returns error
+    const fixerButton = await screen.findByRole('button', { name: /Become fixer/i })
+    await userEvent.click(fixerButton)
+
+    expect(alertMock).toHaveBeenCalledWith("Job not found")
+    expect(screen.getByText("placeholder")).toBeInTheDocument()
+
+    // Become fixer — network failure
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/jobs/assign/fixer/9500/User2" && options?.method === "PUT") {
+            return Promise.reject(new Error("Network error"))
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await userEvent.click(fixerButton)
+
+    expect(alertMock).toHaveBeenCalledWith("Error assigning fixer. Please try again")
+    expect(screen.getByText("placeholder")).toBeInTheDocument()
+
+    // Now succeed at becoming fixer so we can test My Work errors
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/jobs/assign/fixer/9500/User2" && options?.method === "PUT") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ message: "The fixer for the job has been assigned." }),
+            })
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job1, job2] }),
+            })
+        }
+        if (url === "/api/jobs/fixer/User2") {
+            return Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ message: "No jobs found for this fixer" }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await userEvent.click(fixerButton)
+    expect(screen.getByText("User2")).toBeInTheDocument()
+
+    // Navigate to Job List
+    const jobListButton2 = screen.getByRole('button', { name: /Job List/i })
+    await userEvent.click(jobListButton2)
+
+    let allButtons = await screen.findAllByRole('button', { name: /Job Poster:/i })
+    expect(allButtons).toHaveLength(2)
+
+    // My Work — API returns error
+    const myWorkButton = screen.getByRole('button', { name: /My Work/i })
+    await userEvent.click(myWorkButton)
+
+    expect(alertMock).toHaveBeenCalledWith("No jobs found for this fixer")
+    // Jobs list should remain unchanged (2 jobs still shown)
+    allButtons = screen.getAllByRole('button', { name: /Job Poster:/i })
+    expect(allButtons).toHaveLength(2)
+
+    // My Work — network failure
+    globalThis.fetch = jest.fn((url, options) => {
+        if (url === "/api/jobs/fixer/User2") {
+            return Promise.reject(new Error("Network error"))
+        }
+        if (url === "/api/jobs") {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ jobs: [job1, job2] }),
+            })
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) })
+    })
+
+    await userEvent.click(myWorkButton)
+
+    expect(alertMock).toHaveBeenCalledWith("Error receiving jobs. Try again.")
+    // Jobs list should remain unchanged
+    allButtons = screen.getAllByRole('button', { name: /Job Poster:/i })
+    expect(allButtons).toHaveLength(2)
+
+    alertMock.mockRestore()
+})
+

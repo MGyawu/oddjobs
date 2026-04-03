@@ -13,12 +13,16 @@ const NavBar = () =>{
     const GetJobList = async () =>{
         try{
             const response = await fetch("/api/jobs")
-            if (!response.ok) return
             const data = await response.json()
+            if (!response.ok){
+                alert(data.message)
+                return
+            }
             setJobs(data.jobs)
 
         } catch (error) {
-            console.log("Jobs not present")
+            console.log("Error receiving jobs. Try again.")
+            alert("Error receiving jobs. Try again.")
         }
         
         navigate('/jobs')
@@ -31,25 +35,49 @@ const NavBar = () =>{
         }
         try{
             const response = await fetch(`/api/jobs/users/${user.username}`)
-            if (!response.ok) return
-
             const data = await response.json()
+            if (!response.ok){
+                alert(data.message)
+                return
+            }
+            
             setJobs(data.jobs)
         } catch (error) {
-            console.log("Jobs not present")
+            console.log("Error receiving jobs. Try again.")
+            alert("Error receiving jobs. Try again.")
         }
         navigate(`/jobs/user/${user.username}`)
+    }
+
+    const GetFixerJobList = async () =>{
+         if (!user.username){ 
+            alert("You are not logged in. Log in or create an account.")
+            return
+        }
+        try{
+            const response = await fetch(`/api/jobs/fixer/${user.username}`)
+            const data = await response.json()
+            if (!response.ok){
+                alert(data.message)
+                return
+            }
+            
+            setJobs(data.jobs)
+        } catch (error) {
+            console.log("Error receiving jobs. Try again.")
+            alert("Error receiving jobs. Try again.")
+        }
+        navigate(`/jobs/fixer/${user.username}`)
     }
 
     return(
     <div>
         <h1> Odd Jobs</h1>
         <nav>
-            {/*<button>Create a Job</button>
-            <button onClick={() => navigate('/jobs')}>Job List</button>*/}
             <button onClick={() => {navigate('/create')}}>Create a Job</button>
             <button onClick={() => GetJobList()}>Job List</button>
             <button onClick={() => GetUserJobList()}>My Jobs</button>
+            <button onClick={() => GetFixerJobList()}>My Work</button>
         </nav>
     </div>
         

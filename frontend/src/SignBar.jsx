@@ -7,7 +7,7 @@ const SignBar = () =>{
     const { user, setUserState } = useContext(UserContext)
 
     if (location.pathname === "/create" || location.pathname.includes("/jobs")) return null//location.pathname === "/jobs") return null
-    
+
     const NavFromSignUp = async () => {
         if (location.pathname === "/"){
             try {
@@ -38,7 +38,7 @@ const SignBar = () =>{
             }
             return
         }
-        if (location.pathname === "/login"){
+        else{
             navigate('/')
             return
         }
@@ -69,7 +69,8 @@ const SignBar = () =>{
             navigate('/jobs')
             return
         }
-        if (location.pathname === "/"){
+
+        else{
             navigate('/login')
             return
         }

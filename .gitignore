@@ -7,4 +7,9 @@ testdata.json
 .venv/
 *venv*
 .pytest_cache/
+.env
+.env.prod
+.env.production
+.env*.local
 backend/
+*App.test.jsx

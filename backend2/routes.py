@@ -161,21 +161,3 @@ def create_job():
 
     #return message for the newly created job
     return jsonify({"message": "Job created"}), 201
-
-'''
-#Delete a job
-@approutes.route("/delete_job/<int:jobid>", methods=["DELETE"])
-def delete_job(jobid):
-    job = Job.query.get(jobid)
-
-    #Return an error message if the job is not there
-    if not job:
-        return jsonify({"message": "job not found"}), 404
-
-    #Delete the job from the database
-    db.session.delete(job)
-    db.session.commit()
-
-    #Return confirmation message
-    return jsonify({"message": "User deleted"}), 200
-    '''

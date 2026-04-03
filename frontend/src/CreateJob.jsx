@@ -40,8 +40,8 @@ const CreateJob = ()=>{
         <h2>Create Job</h2>
         <h3>Username: {user.username}</h3>
         <form className="create-form">
-            <label>Address: <input type="text" value={singleJob.address || ""} onChange={e => handleChange("address", e.target.value)}></input></label>
-            <label>Description: <textarea value={singleJob.description || ""} onChange={e => handleChange("description", e.target.value)}></textarea></label>
+            <label className="jobsbutton">Address: <input type="text" value={singleJob.address || ""} onChange={e => handleChange("address", e.target.value)}></input></label>
+            <label className="jobsbutton">Description: <textarea value={singleJob.description || ""} onChange={e => handleChange("description", e.target.value)}></textarea></label>
         </form>
         <button onClick={() => {SaveJob()}}>Create</button>
     </div>

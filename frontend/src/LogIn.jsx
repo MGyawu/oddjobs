@@ -3,7 +3,6 @@ import { UserContext } from "./App"
 import { useContext } from "react";
 
 const LogIn = () =>{
-    //return <div>Sign Up Page Placeholder</div>
     const { user, setUserState } = useContext(UserContext);
     
     const handleChange = (field, value) => {

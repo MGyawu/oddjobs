@@ -81,9 +81,9 @@ function App( initialJobs = POSTEDJOBS, initialUser = CURRENTUSER) {
                 <Route path='/' element={<SignUp />}/>
                 <Route path='login' element={<LogIn />}/>
                 <Route path='/create' element={<CreateJob />}/>
-                {/*<Route path='/jobs' element={<JobList jobs={jobs} setJobs={setJobs}/>}/>*/}
                 <Route path='/jobs' element={<JobList />}/>
                 <Route path='/jobs/user/:username' element={<JobList />}/>
+                <Route path='/jobs/fixer/:username' element={<JobList />}/>
                 <Route path='/jobs/job/:jobid' element={<Job />} />
               </Routes>
               <SignBar />
