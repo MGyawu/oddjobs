@@ -23,7 +23,7 @@ jobs:
               uses: aquasecurity/trivy-action@master
               with:
                 image-ref: backend-image
-                severity: HIGH, CRITICAL
+                severity: HIGH,CRITICAL
 
             - name: Build Frontend Image
               run: docker build -t frontend-image ./frontend
@@ -32,4 +32,4 @@ jobs:
               uses: aquasecurity/trivy-action@master
               with:
                 image-ref: frontend-image
-                severity: HIGH, CRITICAL
+                severity: HIGH,CRITICAL

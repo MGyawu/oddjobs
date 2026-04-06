@@ -11,15 +11,16 @@ on:
 jobs:
     semgrep:
         runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
 
         steps:
             - name: Checkout Code
               uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
 
             - name: Run Semgrep
-              uses: returntocorp/semgrep-action@v1
-              with:
-                config: >
-                    p/python
-                    p/javascript
-                    p/owasp-top-ten
+              run: |
+                echo "" > .semgrepignore
+                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --error
