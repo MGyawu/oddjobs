@@ -48,7 +48,7 @@ rules:
       owasp:
         - A04:2025 - Cryptographic Failures
 
-  - id: raw-password-from request
+  - id: raw-password-from-request
     patterns:
     - pattern: |
         $PWD = request.json.get("password")
