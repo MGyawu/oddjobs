@@ -20,16 +20,18 @@ jobs:
               run: docker build -t backend-image ./backend2
 
             - name: Scan Backend Image
-              uses: aquasecurity/trivy-action@master
+              uses: aquasecurity/trivy-action@0.69.3
               with:
                 image-ref: backend-image
                 severity: HIGH,CRITICAL
+                exit-code: '1'
 
             - name: Build Frontend Image
               run: docker build -t frontend-image ./frontend
 
             - name: Scan frontend image
-              uses: aquasecurity/trivy-action@master
+              uses: aquasecurity/trivy-action@0.69.3
               with:
                 image-ref: frontend-image
                 severity: HIGH,CRITICAL
+                exit-code: '1'

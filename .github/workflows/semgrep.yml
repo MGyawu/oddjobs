@@ -23,4 +23,4 @@ jobs:
             - name: Run Semgrep
               run: |
                 echo "" > .semgrepignore
-                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --error
+                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --config .semgrep/ --error
