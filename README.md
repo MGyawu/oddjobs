@@ -24,9 +24,27 @@ flowchart TD
 
 OddJobs is a platform for those who need capable handyman work done in their homes or workplace. Whether you need a shelf fixed, a tv mounted, or a hole in the wall filled, this is the place for you.
 
-The app follows this structure:
+The web application follows this structure:
 
 ``` mermaid
 flowchart LR
   A[Database:  PostgreSQL] --> B[Backend: Python Flask] --> C[Frontend: ReactJS]
 ```
+
+This web application allows users to, upon signing up or logging in, to post jobs for things they need fixed or to sign up to complete jobs for other users on the platform. 
+
+*** Include some screenshots here ***
+
+
+## GitHub Actions Implementation and Vulnerability Remediation
+### GitHub Workflows
+### Semgrep
+### Trivy
+### Tests
+### Failed Scan Attempt
+### Remediation
+### Successful Scan
+
+## Completed Deployment
+
+## Issues and Troubleshooting
