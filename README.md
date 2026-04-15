@@ -1,25 +1,32 @@
-# OddJobs
+# OddJobs - Secure Software Deployment Pipeline
 
-OddJobs is a platform for those who need capable handyman work done in their homes or workplace. Whether you need a shelf fized, a tv mounted, or a hole in the wall filled, this is the place for you.
+The goal of this project is to mimic and document the flow of full-stack application creation and secure deployment through a cloud service provider. The critical elements of this workflow include the following:
 
-## Project Structure and Timelime
+1. My Web Application (Titled: Odd Jobs)
+2. CI/CD Pipeline (GitHub Actions)
+3. Cloud provider service for deployment (AWS EC2)
 
-OddJobs is a CRUD web application that is made with this structure:
+## Project Workflow
 
-Frontend: ReactJS (Vite) --> Backend: Python (Flask) --> Database: SQLite (local edition)/PostgresQL (deployment)
+The deployment of OddJobs will follow this workflow:
 
-In creating this web application, I decided to define each phase of its production into these catergories:
-1. Initial App creation
-2. Docker implementation
-3. CI/CD Integration and Deployment
+``` mermaid
+flowchart TD
+    A[Application Creation] --> B[Security Scanning and Testing through GitHub Actions CI/CD]
 
-### 1. Initial App Creation
-In this phase, I am focusing primarily on creating a functioning local version of the OddJobs web app. The tables within this app's database track Users (those posting and accepting jobs on the apps) and Jobs (the services that the users need). Here is the format for these database tables.
+    B -->|Passed| C[Deploy]
+    B -->|Failed| D[Developer remediates vulnerabilities]
 
-#### User Table Format
-|userid|user_name|first_name|last_name|email|
-|------|---------|----------|---------|-----|
+    D --> B
+```
 
-#### Job Table Format
-|jobid|user_name|address|description|fixer_name|status|
-|-----|---------|-------|-----------|----------|------|
+## Odd Jobs
+
+OddJobs is a platform for those who need capable handyman work done in their homes or workplace. Whether you need a shelf fixed, a tv mounted, or a hole in the wall filled, this is the place for you.
+
+The app follows this structure:
+
+``` mermaid
+flowchart LR
+  A[Database:  PostgreSQL] --> B[Backend: Python Flask] --> C[Frontend: ReactJS]
+```
