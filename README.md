@@ -24,6 +24,10 @@ flowchart TD
 
 OddJobs is a platform for those who need capable handyman work done in their homes or workplace. Whether you need a shelf fixed, a tv mounted, or a hole in the wall filled, this is the place for you.
 
+This web application allows users to, upon signing up or logging in, to post jobs for things they need fixed or to sign up to complete jobs for other users on the platform. 
+
+*** Include some screenshots of website here ***
+
 The web application follows this structure:
 
 ``` mermaid
@@ -31,9 +35,9 @@ flowchart LR
   A[Database:  PostgreSQL] --> B[Backend: Python Flask] --> C[Frontend: ReactJS]
 ```
 
-This web application allows users to, upon signing up or logging in, to post jobs for things they need fixed or to sign up to complete jobs for other users on the platform. 
+Each of these will be stored within their own docker containers. When a user accesses the website, the frontend container will perform API calls to the backend container in order to send, update, and retrieve data or info from the database container.
 
-*** Include some screenshots here ***
+*****Note:***** While I do recognize that many businesses or enterprises would typically host these containers in separate EC2 or server clusters (and in the case of the database they may use the AWS Aurora RDS service), due to the smaller size and nature of this project, I thought it fit to run all of these containers in one EC2 instance.
 
 
 ## GitHub Actions Implementation and Vulnerability Remediation
