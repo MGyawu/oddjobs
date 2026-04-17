@@ -42,10 +42,28 @@ Each of these will be stored within their own docker containers. When a user acc
 
 ## GitHub Actions Implementation and Vulnerability Remediation
 ### GitHub Workflows
+
+*** Worflow image and link ***
+*** Pull Request and failure overview ***
+
 ### Semgrep
+
+*** Semgrep file and rules file ***
+
 ### Trivy
+
+*** Trivy scan file ***
+
 ### Tests
+
+*** Tests scan file ***
+
 ### Failed Scan Attempt
+
+#### Tests scan
+#### Semgrep scan
+#### Trivy Scan
+
 ### Remediation
 ### Successful Scan
 
