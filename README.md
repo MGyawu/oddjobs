@@ -57,10 +57,12 @@ Each of these will be stored within their own docker containers. When a user acc
 ### Trivy
 
 *** Trivy scan file ***
+![trivy.yml](SPD-Trivy.png)
 
 ### Tests
 
 *** Tests scan file ***
+![tests.yml](SPD-Tests.png)
 
 ### Failed Scan Attempt
 
