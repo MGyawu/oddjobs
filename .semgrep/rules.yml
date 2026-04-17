@@ -1,0 +1,66 @@
+rules:
+
+  # Public Access to API
+  # OWASP A01:2025 - Broken Access Control
+  #-------------------------------------------------------------------------------------------------------------------------------------
+  - id: cors-allows-all-origins
+    patterns:
+    - pattern: CORS($APP)
+    message: >
+      CORS is configured with no origin restrictions. Any third-party website can make requests to this API. Restrict to your frontend.
+      origin: CORS(app, origins=["https://yourdomain.com"]).
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy"
+      owasp:
+        - A01:2025 - Broken Access Control
+
+  
+
+  # Plaintext Password Use
+  # OWASP A04:2025 - Cryptographic Failures
+  #-------------------------------------------------------------------------------------------------------------------------------------
+  - id: password-stored-as-plain-string
+    patterns:
+    - pattern: password = db.Column(db.String(...), ...)
+    message: >
+      Password is stored as an unhashed string. Use a password hashing library to hash before storage.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe:
+        - "CWE-256: Plaintext Storage of a Password"
+      owasp:
+        - A04:2025 - Cryptographic Failures
+
+  - id: password-compared-via-query
+    patterns:
+    - pattern: $MODEL.query.filter_by(..., password=$PWD, ...)
+    message: >
+      Password is compared by passing it directly into a database query. Replace by fetching the username only then verify the password using a hash comparison.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe:
+        - "CWE-256: Plaintext Storage of a Password"
+      owasp:
+        - A04:2025 - Cryptographic Failures
+
+  - id: raw-password-from-request
+    patterns:
+    - pattern: |
+        $PWD = request.json.get("password")
+        ...
+        $MODEL(..., password=$PWD, ...)
+    message: >
+      Password is taken directly from the request and passed unhashed into a model constructor. Hash the password before storing it.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe:
+        - "CWE-256: Plaintext Storage of a Password"
+      owasp:
+        - A04:2025 - Cryptographic Failures
+

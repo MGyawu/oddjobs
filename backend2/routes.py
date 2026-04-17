@@ -53,8 +53,23 @@ def create_user():
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-    #return message for the newly created job
-    return jsonify({"message": "User created"}), 201
+    #return message for the newly created user
+    return jsonify({"message": "User created", "userid": userid}), 201
+
+#Authenticates User login info
+@approutes.route("/users/login", methods=["POST"])
+def authenticate_login():
+    user_name = request.json.get("username")
+    password = request.json.get("password")
+
+    if not user_name or not password: 
+        return jsonify({"message" : "Username or Password not found"}), 400
+
+    user = User.query.filter_by(user_name=user_name, password=password).first()
+    if not user:
+        return jsonify({"message": "Invalid Username or Password"}), 401
+
+    return jsonify(user.to_json()), 200
 
 #Get Jobs from a database
 @approutes.route("/jobs", methods=["GET"])
@@ -130,7 +145,7 @@ def create_job():
 
     if not user_name or not address or not description or not status:
         return (
-            jsonify({"message": "You must include an address and description"}),
+            jsonify({"message": "You must be signed in and include an address and description"}),
             400,
             )
 
@@ -146,21 +161,3 @@ def create_job():
 
     #return message for the newly created job
     return jsonify({"message": "Job created"}), 201
-
-'''
-#Delete a job
-@approutes.route("/delete_job/<int:jobid>", methods=["DELETE"])
-def delete_job(jobid):
-    job = Job.query.get(jobid)
-
-    #Return an error message if the job is not there
-    if not job:
-        return jsonify({"message": "job not found"}), 404
-
-    #Delete the job from the database
-    db.session.delete(job)
-    db.session.commit()
-
-    #Return confirmation message
-    return jsonify({"message": "User deleted"}), 200
-    '''
