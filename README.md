@@ -26,8 +26,6 @@ OddJobs is a platform for those who need capable handyman work done in their hom
 
 This web application allows users to, upon signing up or logging in, to post jobs for things they need fixed or to sign up to complete jobs for other users on the platform. 
 
-*** Include some screenshots of website here ***
-
 The web application follows this structure:
 
 ``` mermaid
