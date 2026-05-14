@@ -4,6 +4,7 @@ __pycache__/
 *.pyd
 *.db
 testdata.json
+node_modules/
 .venv/
 *venv*
 .pytest_cache/

@@ -1,5 +1,4 @@
 rules:
-
   # Public Access to API
   # OWASP A01:2025 - Broken Access Control
   #-------------------------------------------------------------------------------------------------------------------------------------
@@ -16,8 +15,6 @@ rules:
         - "CWE-942: Permissive Cross-domain Policy"
       owasp:
         - A01:2025 - Broken Access Control
-
-  
 
   # Plaintext Password Use
   # OWASP A04:2025 - Cryptographic Failures
