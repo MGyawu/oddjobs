@@ -33,7 +33,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Build Frontend Image
-              run: docker build --target builder -t frontend-image ./frontend
+              run: docker build --target production -t frontend-image ./frontend
 
             - name: Scan frontend image
               uses: aquasecurity/trivy-action@master
