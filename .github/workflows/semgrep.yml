@@ -1,0 +1,26 @@
+name: Semgrep Scan
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+
+            - name: Run Semgrep
+              run: |
+                echo "" > .semgrepignore
+                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --config .semgrep/ --error

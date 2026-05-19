@@ -2,6 +2,7 @@ from flask import request, jsonify, Blueprint
 from extensions import db
 from models2 import User, Job
 from uuid import uuid4
+from werkzeug.security import generate_password_hash, check_password_hash
 
 approutes = Blueprint("app", __name__)
 
@@ -29,14 +30,14 @@ def create_user():
 
     userid = str(uuid4())
     user_name = request.json.get("username")
-    password = request.json.get("password")
+    raw_password = request.json.get("password")
     first_name = request.json.get("firstName")
     last_name = request.json.get("lastName")
     email = request.json.get("email")
 
     #return error message if any of the user entered values are empty
     #if not user_name or not password or not first_name or not last_name or not email:
-    if not user_name or not password or not first_name or not last_name or not email:
+    if not user_name or not raw_password or not first_name or not last_name or not email:
         return (
             jsonify({"message" : "Important account info missing. Fill all fields"}),
             400,
@@ -45,16 +46,30 @@ def create_user():
     #When adding new user to the database, we create a new user object, add to database session,
     #commit anything in the session.
     #In the event of an error/exception we return the error with a status code of 400
-    #new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
-    new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
+    new_user = User(userid=userid, user_name=user_name, password_hash=generate_password_hash(raw_password), first_name=first_name, last_name=last_name, email=email)
     try:
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-    #return message for the newly created job
-    return jsonify({"message": "User created"}), 201
+    #return message for the newly created user
+    return jsonify({"message": "User created", "userid": userid}), 201
+
+#Authenticates User login info
+@approutes.route("/users/login", methods=["POST"])
+def authenticate_login():
+    user_name = request.json.get("username")
+    raw_password = request.json.get("password")
+
+    if not user_name or not raw_password: 
+        return jsonify({"message" : "Username or Password not found"}), 400
+
+    user = User.query.filter_by(user_name=user_name).first()
+    if not user or not check_password_hash(user.password_hash, raw_password):
+        return jsonify({"message": "Invalid Username or Password"}), 401
+
+    return jsonify(user.to_json()), 200
 
 #Get Jobs from a database
 @approutes.route("/jobs", methods=["GET"])
@@ -130,7 +145,7 @@ def create_job():
 
     if not user_name or not address or not description or not status:
         return (
-            jsonify({"message": "You must include an address and description"}),
+            jsonify({"message": "You must be signed in and include an address and description"}),
             400,
             )
 
@@ -146,21 +161,3 @@ def create_job():
 
     #return message for the newly created job
     return jsonify({"message": "Job created"}), 201
-
-'''
-#Delete a job
-@approutes.route("/delete_job/<int:jobid>", methods=["DELETE"])
-def delete_job(jobid):
-    job = Job.query.get(jobid)
-
-    #Return an error message if the job is not there
-    if not job:
-        return jsonify({"message": "job not found"}), 404
-
-    #Delete the job from the database
-    db.session.delete(job)
-    db.session.commit()
-
-    #Return confirmation message
-    return jsonify({"message": "User deleted"}), 200
-    '''

@@ -12,7 +12,7 @@ import time
 def create_app(database_uri=None):
     #Initializes the app and allows cross origin requests to be sent
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins = ['http://localhost:5173', 'http://127.0.0.1:5173'])
 
     if not database_uri:
         database_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', "sqlite:///mydatabase.db")
@@ -24,26 +24,24 @@ def create_app(database_uri=None):
     #Create Database instance
     db.init_app(app)
 
-    app.register_blueprint(approutes)
+    app.register_blueprint(approutes, url_prefix="/api")
     return app
 
 #Run flask application
 if __name__ == "__main__":
-    #initialize database
-    app=create_app(os.environ.get('DATABASE_URL'))
-    time.sleep(5)
+    import sys
+
+    if "test" in sys.argv:
+        app = create_app("sqlite:///:memory:")
+    else:
+        #initialize database
+        app=create_app(os.environ.get('DATABASE_URL'))
+    #time.sleep(5)
     with app.app_context():
         print("App Created")
         db.create_all()
         print("Tables Created")
     
-    #print("DB bound app: ", db.get_app())
-    app.run(host="0.0.0.0", port = 5000, debug=True)
-    #print("DB bound app: ", db.get_app())
 
-
-
-
-
-
-    #ssh key commit test
+    app.run(port = 5000, debug=False)
+  
