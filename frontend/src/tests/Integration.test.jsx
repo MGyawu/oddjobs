@@ -36,7 +36,6 @@ test('Signing up creates a user saved and returns error when sign up is done inc
                 json: () => Promise.resolve({
                     id: "test-uuid-123",
                     username: "TestUser",
-                    password: "TestPassword",
                     firstName: "TestFirst",
                     lastName: "TestLast",
                     email: "test@example.com",
@@ -130,7 +129,6 @@ test('Login functions correctly on valid and invalid authentication attempts', a
                 json: () => Promise.resolve({
                     id: "test-uuid-123",
                     username: "TestUser",
-                    password: "TestPassword",
                     firstName: "TestFirst",
                     lastName: "TestLast",
                     email: "test@example.com",
@@ -254,7 +252,6 @@ test('Creates a jobs for the current logged in user with correct API calls', asy
                 json: () => Promise.resolve({
                     id: "test-uuid-123",
                     username: "TestUser",
-                    password: "TestPassword",
                     firstName: "TestFirst",
                     lastName: "TestLast",
                     email: "test@example.com",
@@ -344,7 +341,6 @@ test('My Jobs button only shows the logged users jobs', async() => {
                     id: "test-uuid-123",
                     user_name: "TestUser",
                     username: "TestUser",
-                    password: "TestPassword",
                     firstName: "TestFirst",
                     lastName: "TestLast",
                     email: "test@example.com",
@@ -475,7 +471,6 @@ test('User creates a job, clicks it, completes it, and status updates to Complet
                 json: () => Promise.resolve({
                     id: "test-uuid-456",
                     username: "TestUser",
-                    password: "TestPassword",
                     firstName: "TestFirst",
                     lastName: "TestLast",
                     email: "test@example.com",
@@ -583,7 +578,6 @@ test('A different user can become the fixer for another users job', async() => {
                 json: () => Promise.resolve({
                     id: "creator-uuid",
                     username: "Creator",
-                    password: "Pass123",
                     firstName: "Cre",
                     lastName: "Ator",
                     email: "creator@example.com",
@@ -646,7 +640,6 @@ test('A different user can become the fixer for another users job', async() => {
                 json: () => Promise.resolve({
                     id: "fixer-uuid",
                     username: "FixerUser",
-                    password: "FixPass",
                     firstName: "Fix",
                     lastName: "Er",
                     email: "fixer@example.com",
@@ -720,7 +713,6 @@ test('Become fixer shows alert when API returns error', async() => {
                 json: () => Promise.resolve({
                     id: "fixer-uuid",
                     username: "FixerUser",
-                    password: "FixPass",
                     firstName: "Fix",
                     lastName: "Er",
                     email: "fixer@example.com",
@@ -815,7 +807,6 @@ test('Complete job shows alert when API returns error', async() => {
                 json: () => Promise.resolve({
                     id: "test-uuid",
                     username: "TestUser",
-                    password: "TestPass",
                     firstName: "Test",
                     lastName: "User",
                     email: "test@example.com",
@@ -917,7 +908,6 @@ test('User2 becomes fixer for one of User1 jobs and sees only that job under My 
                 json: () => Promise.resolve({
                     id: "user1-uuid",
                     username: "User1",
-                    password: "Pass1",
                     firstName: "First1",
                     lastName: "Last1",
                     email: "user1@example.com",
@@ -1003,7 +993,6 @@ test('User2 becomes fixer for one of User1 jobs and sees only that job under My 
                 json: () => Promise.resolve({
                     id: "user2-uuid",
                     username: "User2",
-                    password: "Pass2",
                     firstName: "First2",
                     lastName: "Last2",
                     email: "user2@example.com",
@@ -1099,7 +1088,6 @@ test('User2 becomes fixer flow shows errors for API failure and network failure'
                 json: () => Promise.resolve({
                     id: "user2-uuid",
                     username: "User2",
-                    password: "Pass2",
                     firstName: "First2",
                     lastName: "Last2",
                     email: "user2@example.com",

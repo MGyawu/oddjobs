@@ -12,7 +12,7 @@ import time
 def create_app(database_uri=None):
     #Initializes the app and allows cross origin requests to be sent
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins = ['http://localhost:5173', 'http://127.0.0.1:5173'])
 
     if not database_uri:
         database_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', "sqlite:///mydatabase.db")

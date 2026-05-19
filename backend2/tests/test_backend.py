@@ -64,11 +64,14 @@ def test_authenticate_login(client,app, test_user_data):
     assert response.status_code == 200
     data = response.get_json()
     assert data["username"] == user.user_name
-    assert data["password"] == user.password
     assert data["firstName"] == user.first_name
     assert data["lastName"] == user.last_name
     assert data["email"] == user.email
     assert data["id"] == user.userid
+
+    #Security/Password info not returned in API Response
+    assert "password" not in data
+    assert "password_hash" not in data
 
     #Username no password
     response = client.post("/api/users/login", json={
