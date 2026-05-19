@@ -42,6 +42,6 @@ if __name__ == "__main__":
         db.create_all()
         print("Tables Created")
     
-    #print("DB bound app: ", db.get_app())
-    app.run(host="0.0.0.0", port = 5000, debug=True)
-    #print("DB bound app: ", db.get_app())
+
+    app.run(port = 5000, debug=False)
+  
