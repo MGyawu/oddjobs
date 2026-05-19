@@ -15,6 +15,11 @@ FROM builder AS build
 FROM nginx:alpine AS production
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+RUN addgroup -S appuser \
+    && adduser -S appuser -G appuser \
+    && chown -R appuser:appuser /usr/share/nginx/html /var/cache/nginx /etc/nginx/conf.d /tmp
+
 EXPOSE 80
 
 USER appuser
