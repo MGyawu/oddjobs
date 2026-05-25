@@ -39,16 +39,18 @@ jobs:
                 username: ${{secrets.ODDJOBS_USER}}
                 key: ${{secrets.ODDJOBS_SSH_KEY}}
                 script: |
-                    cd ~/oddjobs || git clone https://github.com/${{github.repository}}.git ~/oddjobs && cd ~/oddjobs
+                    cd ~/oddjobs || git clone https://github.com/${{ github.repository }}.git ~/oddjobs && cd ~/oddjobs
                     git fetch origin main
                     git reset --hard origin/main
+
                     if ! command -v docker >/dev/null 2>&1; then
                         sudo apt-get update
-                        sudo apt-get install -y docker.io docker-compose-v2
+                        sudo apt-get install -y docker.io docker-compose-plugin
                         sudo systemctl enable --now docker
                     fi
-                    docker compose down
-                    docker compose build
-                    docker compose up -d
+
+                    sudo docker compose down
+                    sudo docker compose build
+                    sudo docker compose up -d
                     
                     
