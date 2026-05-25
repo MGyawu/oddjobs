@@ -39,8 +39,18 @@ if __name__ == "__main__":
     #time.sleep(5)
     with app.app_context():
         print("App Created")
-        db.create_all()
-        print("Tables Created")
+        max_retries = 10
+        for attempt in range(max_retries):
+            try:
+                db.create_all()
+                print("Tables Created")
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    print(f"Database not ready, retrying in 5s... ({attempt + 1}/{max_retries})")
+                    time.sleep(5)
+                else:
+                    raise
     
 
     app.run(port = 5000, debug=False)

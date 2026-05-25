@@ -18,7 +18,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN addgroup -S appuser \
     && adduser -S appuser -G appuser \
-    && chown -R appuser:appuser /usr/share/nginx/html /var/cache/nginx /etc/nginx/conf.d /tmp
+    && chown -R appuser:appuser /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d /tmp \
+    && touch /run/nginx.pid \
+    && chown appuser:appuser /run/nginx.pid
 
 EXPOSE 80
 
