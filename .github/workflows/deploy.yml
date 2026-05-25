@@ -14,25 +14,36 @@ jobs:
 
         steps:
             - name: Verify all workflows passed
+              id: gate
               uses: actions/github-script@v7
               with:
                 script: |
                     const sha = context.payload.workflow_run.head_sha;
                     const required = ['Tests', 'Semgrep Scan', 'Trivy Scan'];
 
-                    for(const name of required){
-                        const runs = await github.rest.actions.listWorkflowRunsForRepo({
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                            head_sha: sha,
-                            status: 'completed'
-                        });
-                        if(!runs.data.workflow_runs.find(r => r.name === name && r.conclusion === 'success')){
-                            core.setFailed(`"${name}" has not passed for ${sha}`);
+                    const { data: { workflow_runs } } = await github.rest.actions.listWorkflowRunsForRepo({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        head_sha: sha,
+                        status: 'completed'
+                    });
+
+                    for (const name of required) {
+                        const run = workflow_runs.find(r => r.name === name);
+                        if (!run) {
+                            core.notice(`"${name}" has not completed yet for ${sha} — skipping deploy until all checks finish`);
+                            core.setOutput('ready', 'false');
+                            return;
+                        }
+                        if (run.conclusion !== 'success') {
+                            core.setFailed(`"${name}" did not pass for ${sha}`);
                             return;
                         }
                     }
+                    core.setOutput('ready', 'true');
+
             - name: Deploy to EC2
+              if: steps.gate.outputs.ready == 'true'
               uses: appleboy/ssh-action@v1.2.0
               with:
                 host: ${{secrets.ODDJOBS_HOST}}
@@ -50,7 +61,13 @@ jobs:
                         sudo usermod -aG docker $USER || true
                     fi
 
-                    sudo docker compose down
+                    cat > ~/oddjobs/.env <<ENVEOF
+                    POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+                    POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+                    POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+                    ENVEOF
+
+                    sudo docker compose down --remove-orphans
                     sudo docker compose build
-                    sudo docker compose up -d
+                    sudo docker compose up -d --remove-orphans
                     
