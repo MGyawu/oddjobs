@@ -42,6 +42,11 @@ jobs:
                     cd ~/oddjobs || git clone https://github.com/${{github.repository}}.git ~/oddjobs && cd ~/oddjobs
                     git fetch origin main
                     git reset --hard origin/main
+                    if ! command -v docker >/dev/null 2>&1; then
+                        sudo apt-get update
+                        sudo apt-get install -y docker.io docker-compose-v2
+                        sudo systemctl enable --now docker
+                    fi
                     docker compose down
                     docker compose build
                     docker compose up -d
