@@ -8,7 +8,6 @@ import os
 import time
 
 
-#def create_app(database_uri="sqlite:///mydatabase.db"):
 def create_app(database_uri=None):
     #Initializes the app and allows cross origin requests to be sent
     app = Flask(__name__)
@@ -36,7 +35,6 @@ if __name__ == "__main__":
     else:
         #initialize database
         app=create_app(os.environ.get('DATABASE_URL'))
-    #time.sleep(5)
     with app.app_context():
         print("App Created")
         max_retries = 10
@@ -54,4 +52,7 @@ if __name__ == "__main__":
     
 
     app.run(port = 5000, debug=False)
+  
+
+
   
