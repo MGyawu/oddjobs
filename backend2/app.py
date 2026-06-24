@@ -8,7 +8,6 @@ import os
 import time
 
 
-#def create_app(database_uri="sqlite:///mydatabase.db"):
 def create_app(database_uri=None):
     #Initializes the app and allows cross origin requests to be sent
     app = Flask(__name__)
