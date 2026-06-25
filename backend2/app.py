@@ -18,7 +18,7 @@ def create_app(database_uri=None):
             os.environ.get("DATABASE_URL"),
             or os.environ.get("SQLALCHEMY_DATABASE_URI"),
             or "sqlite:///mydatabase.db"
-
+        )
     #Specify the location of local database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
