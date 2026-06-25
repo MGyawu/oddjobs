@@ -7,7 +7,7 @@ class User(db.Model):
     __tablename__ = 'user'
     userid = db.Column(db.String(100), primary_key=True, unique=False, nullable=False)
     user_name = db.Column(db.String(100), unique=False, nullable=False)
-    password_hash = db.Column(db.String(100), unique=False, nullable=False)
+    password_hash = db.Column(db.String(512), unique=False, nullable=False)
     first_name = db.Column(db.String(100), unique=False, nullable=False)
     last_name = db.Column(db.String(100), unique=False, nullable=False)
     email = db.Column(db.String(100), unique=False, nullable=False)
