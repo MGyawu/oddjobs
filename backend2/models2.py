@@ -47,3 +47,5 @@ class Job(db.Model):
             "status" : self.status
         }
 
+
+
