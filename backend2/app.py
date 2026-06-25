@@ -14,7 +14,10 @@ def create_app(database_uri=None):
     CORS(app, origins = ['http://localhost:5173', 'http://127.0.0.1:5173'])
 
     if not database_uri:
-        database_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', "sqlite:///mydatabase.db")
+        database_uri = (
+            os.environ.get("DATABASE_URL"),
+            or os.environ.get("SQLALCHEMY_DATABASE_URI"),
+            or "sqlite:///mydatabase.db"
 
     #Specify the location of local database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
