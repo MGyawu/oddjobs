@@ -24,4 +24,4 @@ ENV FLASK_APP=app.py
 EXPOSE 5000
 
 USER appuser
-CMD ["/bin/sh", "-c", "python init_db.py && exec gunicorn --bind 0.0.0.0:5000 app:create_app()"]
+CMD ["/bin/sh", "-c", "python init_db.py && exec gunicorn --bind 0.0.0.0:5000 'app:create_app()'"]
