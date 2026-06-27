@@ -43,7 +43,7 @@ Each of these will be stored within their own docker containers. When a user acc
 
 *** Worflow image and link ***
 *** Pull Request and failure overview ***
-![deploy.yml](SPD-Deploy.png)
+![deploy.yml](/Documentation/SPD-Deploy-Final.png)
 
 ### Semgrep
 
@@ -55,7 +55,7 @@ Each of these will be stored within their own docker containers. When a user acc
 ### Trivy
 
 *** Trivy scan file ***
-![trivy.yml](SPD-Trivy.png)
+![trivy.yml](/Documentation/SPD-Trivy-Final.png)
 
 ### Tests
 
