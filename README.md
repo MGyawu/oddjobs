@@ -42,6 +42,7 @@ Each of these will be stored within their own docker containers. When a user acc
 ### GitHub Workflows
 
 *** Worflow image and link ***
+
 ``` mermaid
 flowchart LR
 A[Push/Pull Request to main] --> B[Deploy workflow]
@@ -50,14 +51,16 @@ B --> C[Semgrep Workflow]
 B --> D[Trivy Workflow]
 B --> E[Test Workflow]
 
-C --> F[Deployment to EC2]
+C --> F[Passed Scans]
 D --> F
 E --> F
 
-C --> |Failed| G[Deployment Denied]
+C --> |Failed| G[Failed Scans]
 D --> |Failed| G
 E --> |Failed| G
 
+F --> H[Deployment to EC2]
+G --> I[Deployment Denied]
 ```
 
 *** Pull Request and failure overview ***
