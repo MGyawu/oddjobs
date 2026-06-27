@@ -48,9 +48,9 @@ Each of these will be stored within their own docker containers. When a user acc
 ### Semgrep
 
 *** Semgrep file and rules file ***
-![semgrep.yml 1](SPD-Semgrep1.png)
-![semgrep.yml 2](SPD-Semgrep2.png)
-![semgrep.yml 3](SPD-Semgrep3.png)
+![semgrep.yml 1](/Documentation/SPD-Semgrep1.png)
+![semgrep.yml 2](/Documentation/SPD-Semgrep2.png)
+![semgrep.yml 3](/Documentation/SPD-Semgrep3.png)
 
 ### Trivy
 
@@ -60,7 +60,7 @@ Each of these will be stored within their own docker containers. When a user acc
 ### Tests
 
 *** Tests scan file ***
-![tests.yml](SPD-Tests.png)
+![tests.yml](/Documentation/SPD-Tests.png)
 
 ### Failed Scan Attempt
 
