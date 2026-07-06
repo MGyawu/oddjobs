@@ -83,12 +83,14 @@ The custom semgrep rules are stored in ./semgrep/rules.yml . On the off chance t
 
 ### Trivy
 
-*** Trivy scan file ***
+Trivy is a security scan typically used for cloud native applications. In this project Trivy is used to scan the backend and frontend images that are created during deployment. the Trivy workflow, found in .github/trivy.yml, builds both the frontend and backend immages and scans those images to find vulnerabilities that currently can be remediated.
+
 ![trivy.yml](/Documentation/SPD-Trivy-Final.png)
 
 ### Tests
 
-*** Tests scan file ***
+This last workflow builds both the backend and frontend containers, and runs the suite of tests for each, ensuring there is a high level of functionality in both containers.
+
 ![tests.yml](/Documentation/SPD-Tests.png)
 
 ### Failed Scan Attempt
