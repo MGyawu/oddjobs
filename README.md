@@ -63,6 +63,8 @@ F --> H[Deployment to EC2]
 G --> I[Deployment Denied]
 ```
 
+### Deploy
+
 This is the deploy workflow stored in .github/deploy.yml . This workflow's job is split into 2 steps. The first step is titled "Verify all Worflows passed." This is the step where the previously stated Semgrep, Trivy, and Test workflows are triggered. In the event that any of those scans have failed, this workflow does not move onto the next step, and effective blocks deployment.
 
 The next step is titled "Deploy to EC2." In this step, now that the scans have passed, the github actions secrets stored for this repo (ODDJOBS_HOST for the public IP for the EC2 instance, ODDJOBS_USER for the username of the EC2 instance, ODDJOBS_SSH_KEY for the EC2 SSH key, and POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB for the database credentials) are then used to log into the EC2 instance and create the containers for the backend, frontend, and database.
@@ -70,8 +72,12 @@ The next step is titled "Deploy to EC2." In this step, now that the scans have p
 
 ### Semgrep
 
-*** Semgrep file and rules file ***
+Semgrep is a static analysis tool used for to find bugs, poor coding standards and vulnerabilities during code reviews of repos. This Semgrep workflow, found in .github/semgrep.yml, performs a scan for common python, javascript, and OWASP Top 10 vulnerabilities often found in code. In addition to this, I wrote a suite of semgrep rules for semgrep to scan for as well.
+
 ![semgrep.yml 1](/Documentation/SPD-Semgrep1.png)
+
+The custom semgrep rules are stored in ./semgrep/rules.yml . On the off chance that the OWASP Top 10 scans failed, I decided to scan for vulnerabilities that I was already aware of within this repo. These vulnerabilities match the Broken Access Control and Cryptographic Failure vulnerabilities found within OWASP Top 10 and have code patterns for how these vulnerabilities may appear.
+
 ![semgrep.yml 2](/Documentation/SPD-Semgrep2.png)
 ![semgrep.yml 3](/Documentation/SPD-Semgrep3.png)
 
