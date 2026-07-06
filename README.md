@@ -41,7 +41,7 @@ Each of these will be stored within their own docker containers. When a user acc
 ## GitHub Actions Implementation and Vulnerability Remediation
 ### GitHub Workflows
 
-*** Worflow image and link ***
+This is a deeper dive into the deployment process of the OddJobs. Whenever pull request or push into main is created, the Deploy workflow is then triggered. The Deploy workflow then triggers the Semgrep, Trivy, and Test workflows. If all 3 of these workflows return successful scans, then the changes are redeay for deployment. However, if the scans fail, the changes will not be added to the main branch and  deployment will not occur.
 
 ``` mermaid
 flowchart LR
@@ -63,7 +63,9 @@ F --> H[Deployment to EC2]
 G --> I[Deployment Denied]
 ```
 
-*** Pull Request and failure overview ***
+This is the deploy workflow stored in .github/deploy.yml . This workflow's job is split into 2 steps. The first step is titled "Verify all Worflows passed." This is the step where the previously stated Semgrep, Trivy, and Test workflows are triggered. In the event that any of those scans have failed, this workflow does not move onto the next step, and effective blocks deployment.
+
+The next step is titled "Deploy to EC2." In this step, now that the scans have passed, the github actions secrets stored for this repo (ODDJOBS_HOST for the public IP for the EC2 instance, ODDJOBS_USER for the username of the EC2 instance, ODDJOBS_SSH_KEY for the EC2 SSH key, and POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB for the database credentials) are then used to log into the EC2 instance and create the containers for the backend, frontend, and database.
 ![deploy.yml](/Documentation/SPD-Deploy-Final.png)
 
 ### Semgrep
