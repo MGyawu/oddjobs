@@ -95,8 +95,17 @@ This last workflow builds both the backend and frontend containers, and runs the
 
 ### Failed Scan Attempt
 
-#### Tests scan
+#### Failed Pull Request Scans
+
+![SPD-FailedPullRequestScan.png](/Documentation/SPD-FailedPullRequestScan.png)
+
 #### Semgrep scan
+
+![SPD-SemgrepScan-Fail.png](/Documentation/SPD-SemgrepScan-Fail.png)
+![SPD-SemgrepScan-Fail-2.png](/Documentation/SPD-SemgrepScan-Fail-2.png)
+![SPD-SemgrepScan-Fail-3.png](/Documentation/SPD-SemgrepScan-Fail-3.png)
+![SPD-SemgrepScan-Fail-4.png](/Documentation/SPD-SemgrepScan-Fail-4.png)
+
 #### Trivy Scan
 
 ![SPD-TrivyScan-Fail](/Documentation/SPD-TrivyScan-Fail.png)
