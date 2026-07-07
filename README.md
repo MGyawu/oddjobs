@@ -99,6 +99,9 @@ This last workflow builds both the backend and frontend containers, and runs the
 #### Semgrep scan
 #### Trivy Scan
 
+![SPD-TrivyScan-Fail](/Documentation/SPD-TrivyScan-Fail.png)
+![SPD-TrivyScan-Fail-2](/Documentation/SPD-TrivyScan-Fail-2.png)
+
 ### Remediation
 ### Successful Scan
 
