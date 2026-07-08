@@ -122,6 +122,13 @@ Here is the output of the failed Trivy scan for the backend image:
 #### Semgrep Vulnerabilities
 #### Trivy Vulnerabilities
 
+Frontend Docker Changes
+
+![SPD-FrontendDocker-Fail.png](/Documentation/SPD-FrontendDocker-Fail.png)
+![SPD-FrontendDocker-Success.png](/Documentation/SPD-FrontendDocker-Success.png)
+
+Backend Docker Changes
+
 ![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
 ![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
 
