@@ -118,6 +118,13 @@ Here is the output of the failed Trivy scan for the backend image:
 ![SPD-TrivyScan-Fail-2](/Documentation/SPD-TrivyScan-Fail-2.png)
 
 ### Remediation
+
+#### Semgrep Vulnerabilities
+#### Trivy Vulnerabilities
+
+![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
+![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
+
 ### Successful Scan
 
 ## Completed Deployment
