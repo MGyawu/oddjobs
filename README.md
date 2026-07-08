@@ -97,9 +97,13 @@ This last workflow builds both the backend and frontend containers, and runs the
 
 #### Failed Pull Request Scans
 
+In my initial attempt to merge a functional version of the app to main, the deployment workflow ended in failure. As seen below, although it had passed the Test workflow and the Trivy workflow for the frontend, it failed the Trivy backend and Semgrep scans.
+
 ![SPD-FailedPullRequestScan.png](/Documentation/SPD-FailedPullRequestScan.png)
 
 #### Semgrep scan
+
+Here is the output of the failed Semgrep Scan:
 
 ![SPD-SemgrepScan-Fail.png](/Documentation/SPD-SemgrepScan-Fail.png)
 ![SPD-SemgrepScan-Fail-2.png](/Documentation/SPD-SemgrepScan-Fail-2.png)
@@ -107,6 +111,8 @@ This last workflow builds both the backend and frontend containers, and runs the
 ![SPD-SemgrepScan-Fail-4.png](/Documentation/SPD-SemgrepScan-Fail-4.png)
 
 #### Trivy Scan
+
+Here is the output of the failed Trivy scan for the backend image:
 
 ![SPD-TrivyScan-Fail](/Documentation/SPD-TrivyScan-Fail.png)
 ![SPD-TrivyScan-Fail-2](/Documentation/SPD-TrivyScan-Fail-2.png)
