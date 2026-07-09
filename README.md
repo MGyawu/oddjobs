@@ -144,12 +144,18 @@ creating init_db.py so it is including in gunicorn use in Dockerfile
 1. Models and Routes Fail
 2. Models and Routes Success
 
-|Remediation|Before|After|
-|---|---|---|
-||![SPD-Semgrep-Models-Fail.png](/Documentation/SPD-Semgrep-Models-Fail.png)|![SPD-Semgrep-Models-Success.png](/Documentation/SPD-Semgrep-Models-Success.png)|
-||![SPD-Semgrep-Routes-Fail-1.png](/Documentation/SPD-Semgrep-Routes-Fail-1.png)|![SPD-Semgrep-Routes-Success-1.png](/Documentation/SPD-Semgrep-Routes-Success-1.png)|
-||![SPD-Semgrep-Routes-Fail-2.png](/Documentation/SPD-Semgrep-Routes-Fail-2.png)|![SPD-Semgrep-Routes-Success-2.png](/Documentation/SPD-Semgrep-Routes-Success-2.png)|
-||![SPD-Semgrep-Routes-Fail-3.png](/Documentation/SPD-Semgrep-Routes-Fail-3.png)|![SPD-Semgrep-Routes-Success-3.png](/Documentation/SPD-Semgrep-Routes-Success-3.png)|
+
+![SPD-Semgrep-Models-Fail.png](/Documentation/SPD-Semgrep-Models-Fail.png)
+![SPD-Semgrep-Models-Success.png](/Documentation/SPD-Semgrep-Models-Success.png)
+______________________________________________________________________________________________________________________________________________________________________
+![SPD-Semgrep-Routes-Fail-1.png](/Documentation/SPD-Semgrep-Routes-Fail-1.png)
+![SPD-Semgrep-Routes-Success-1.png](/Documentation/SPD-Semgrep-Routes-Success-1.png)
+______________________________________________________________________________________________________________________________________________________________________
+![SPD-Semgrep-Routes-Fail-2.png](/Documentation/SPD-Semgrep-Routes-Fail-2.png)
+![SPD-Semgrep-Routes-Success-2.png](/Documentation/SPD-Semgrep-Routes-Success-2.png)
+_______________________________________________________________________________________________________________________________________________________________________
+![SPD-Semgrep-Routes-Fail-3.png](/Documentation/SPD-Semgrep-Routes-Fail-3.png)
+![SPD-Semgrep-Routes-Success-3.png](/Documentation/SPD-Semgrep-Routes-Success-3.png)
 
 - Password Stored as plain text
 - Raw password in request
