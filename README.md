@@ -123,6 +123,16 @@ Here is the output of the failed Trivy scan for the backend image:
 Gunicorn vulnerability in Trivy
 Gunicorn Remediation
 app.py before and after
+
+before
+
+![SPD-Semgrep-BackendApp-Fail.png](/Documentation/SPD-Semgrep-BackendApp-Fail.png)
+
+after
+
+![SPD-Semgrep-BackendApp-Success1.png](/Documentation/SPD-Semgrep-BackendApp-Success1.png)
+![SPD-Semgrep-BackendApp-Success2-ini](/Documentation/SPD-Semgrep-BackendApp-Success2-initdb.png)
+
 - cors issue
 - setting debug mode to false
 - removing host 0.0.0.0 from app.run
@@ -131,12 +141,6 @@ creating init_db.py so it is including in gunicorn use in Dockerfile
 ***Backend functions and storage remediation***
 
 ***Dockerfiles and Nginx***
-- Add app users
-- running backend dockerfile using gunicorn
-- Nginx change
-
-#### Semgrep Vulnerabilities
-#### Trivy Vulnerabilities
 
 Frontend Docker Changes
 
@@ -147,6 +151,19 @@ Backend Docker Changes
 
 ![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
 ![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
+
+Nginx
+![Placeholder]()
+![SPD-Semgrep-Nginx-Success.png](/Documentation/SPD-Semgrep-Nginx-Success.png)
+
+- Add app users
+- running backend dockerfile using gunicorn
+- Nginx change
+
+#### Semgrep Vulnerabilities
+#### Trivy Vulnerabilities
+
+
 
 ### Successful Scan
 
