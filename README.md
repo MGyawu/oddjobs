@@ -153,7 +153,8 @@ Backend Docker Changes
 ![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
 
 Nginx
-![Placeholder]()
+
+![SPD-Semgrep-Nginx-Fail.png](/Documentation/SPD-Semgrep-Nginx-Fail.png)
 ![SPD-Semgrep-Nginx-Success.png](/Documentation/SPD-Semgrep-Nginx-Success.png)
 
 - Add app users
