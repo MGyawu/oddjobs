@@ -119,6 +119,22 @@ Here is the output of the failed Trivy scan for the backend image:
 
 ### Remediation
 
+***App Initialization Changes***
+Gunicorn vulnerability in Trivy
+Gunicorn Remediation
+app.py before and after
+- cors issue
+- setting debug mode to false
+- removing host 0.0.0.0 from app.run
+creating init_db.py so it is including in gunicorn use in Dockerfile
+
+***Backend functions and storage remediation***
+
+***Dockerfiles and Nginx***
+- Add app users
+- running backend dockerfile using gunicorn
+- Nginx change
+
 #### Semgrep Vulnerabilities
 #### Trivy Vulnerabilities
 
