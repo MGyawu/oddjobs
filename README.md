@@ -190,6 +190,8 @@ Nginx
 
 ### Successful Scan
 
+![SPD-SuccessfulPullRequestScan.png](/Documentation/SPD-SuccessfulPullRequestScan.png)
+
 ## Completed Deployment
 
 ## Issues and Troubleshooting
