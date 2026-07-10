@@ -121,14 +121,38 @@ Here is the output of the failed Trivy scan for the backend image:
 ______________________________________________________________________________________________________________________________________________________________________________________
 ***Dockerfiles***
 
-Frontend Docker Changes
+In the Semgrep scan, one of the failures stated that there was no user outside of root for each container, meaning if an attacker were to attack the website, they would be doing so with root privileges. So the way to solve this issue would be to create another user, give that user appropriate privileges, and ensure that user is needed to run the starting commands without being the root user.
+
+Here are the changes to the frontend dockerfile:
+
+Before
 
 ![SPD-FrontendDocker-Fail.png](/Documentation/SPD-FrontendDocker-Fail.png)
+
+After
+
 ![SPD-FrontendDocker-Success.png](/Documentation/SPD-FrontendDocker-Success.png)
 
-Backend Docker Changes
+As for the backend dockerfile we created another user as well, but that was not the only change necessary. The majority of the trivy python and environment issues came from using an outdated python base image and with outdated libraries. In addition to that, there was no prior initialization of a database before running the app, and the command in the backend dockerfile for running the app ```CMD ["python", "app.py"]``` is typically used for local/dev environment testing and not production. This means needing to make use of the latest version of Gunicorn was necessary. Gunicorn was already present, but at this time it was not used, so I decided to update it in the requirements.txt, and write a new command for running the backend app.
+
+Here are the changes to requirements.txt:
+
+Before
+
+![SPD-RequireFail.png](/Documentation/SPD-RequireFail.png)
+
+After
+
+![SPD-RequireSuccess.png](/Documentation/SPD-RequireSuccess.png)
+
+Here are the changes to the backend dockerfile:
+
+Before
 
 ![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
+
+After
+
 ![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
 
 ______________________________________________________________________________________________________________________________________________________________________________________
