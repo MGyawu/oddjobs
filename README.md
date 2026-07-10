@@ -157,6 +157,7 @@ After
 
 ______________________________________________________________________________________________________________________________________________________________________________________
 ***App Initialization Changes***
+
 Gunicorn vulnerability in Trivy
 Gunicorn Remediation
 app.py before and after
