@@ -162,15 +162,32 @@ Gunicorn vulnerability in Trivy
 Gunicorn Remediation
 app.py before and after
 
-before
+These three issues found within the Semgrep scan results above were found in /backend2/app.y:
+- Semgrep.cors-allows-all-origins: CORS is configured with no origin restrictions. Any third-party website can make requests to this API. Restrict  your frontend. origin: ```CORS(app, origins=["https://yourdomain.com"])```
+
+      15| CORS(app)
+  
+- python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host: Running flask app with host 0.0.0.0 could expose server publicly
+  
+      46| app.run(host="0.0.0.0", port = 5000, debug=True)
+  
+- python.flask.security.audit.debug-enabled.debug-enabled: Detected Flask app with debug=True. Do not deploy production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.
+  
+      46| app.run(host="0.0.0.0", port = 5000, debug=True)
+
+All of these vulnerabilities allow for an attacker to gain access or information passing through the backend server through API calls. In order to remediate them, I will perform these actions:
+
+1. Specifiy an origin domain from which the requests the the backend originate.
+2. Remove ```host="0.0.0.0"``` from the ```app.run()``` command.
+3. Replace ```debug=True``` with ```debug=False```.
+
+In addition, I created another file used for initializing the database and running the application (/backend/init_db.py) to be run as part of the gunicorn command in the backend dockerfile mentioned earlier.
+
+Here is the /backend2/app.py file before the changes.
 
 ![SPD-Semgrep-BackendApp-Fail.png](/Documentation/SPD-Semgrep-BackendApp-Fail.png)
 
-after
-- cors issue
-- setting debug mode to false
-- removing host 0.0.0.0 from app.run
-creating init_db.py so it is including in gunicorn use in Dockerfile
+Here is the /backend2/app.py file after the changes and /backend/init_db.py .
 
 ![SPD-Semgrep-BackendApp-Success1.png](/Documentation/SPD-Semgrep-BackendApp-Success1.png)
 ![SPD-Semgrep-BackendApp-Success2-ini](/Documentation/SPD-Semgrep-BackendApp-Success2-initdb.png)
