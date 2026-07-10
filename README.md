@@ -118,7 +118,20 @@ Here is the output of the failed Trivy scan for the backend image:
 ![SPD-TrivyScan-Fail-2](/Documentation/SPD-TrivyScan-Fail-2.png)
 
 ### Remediation
+______________________________________________________________________________________________________________________________________________________________________________________
+***Dockerfiles***
 
+Frontend Docker Changes
+
+![SPD-FrontendDocker-Fail.png](/Documentation/SPD-FrontendDocker-Fail.png)
+![SPD-FrontendDocker-Success.png](/Documentation/SPD-FrontendDocker-Success.png)
+
+Backend Docker Changes
+
+![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
+![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
+
+______________________________________________________________________________________________________________________________________________________________________________________
 ***App Initialization Changes***
 Gunicorn vulnerability in Trivy
 Gunicorn Remediation
@@ -160,8 +173,9 @@ ________________________________________________________________________________
 - Password Stored as plain text
 - Raw password in request
 - Password is compared by passing it through a query
- 
-***Dockerfiles and Nginx***
+
+ ______________________________________________________________________________________________________________________________________________________________________________________
+***Dockerfiles***
 
 Frontend Docker Changes
 
@@ -173,7 +187,9 @@ Backend Docker Changes
 ![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
 ![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
 
-Nginx
+______________________________________________________________________________________________________________________________________________________________________________________
+
+***Nginx***
 
 - Add app users
 - running backend dockerfile using gunicorn
@@ -181,6 +197,7 @@ Nginx
 
 ![SPD-Semgrep-Nginx-Fail.png](/Documentation/SPD-Semgrep-Nginx-Fail.png)
 ![SPD-Semgrep-Nginx-Success.png](/Documentation/SPD-Semgrep-Nginx-Success.png)
+
 
 
 #### Semgrep Vulnerabilities
