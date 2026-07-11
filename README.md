@@ -163,15 +163,15 @@ Gunicorn Remediation
 app.py before and after
 
 These three issues found within the Semgrep scan results above were found in /backend2/app.y:
-- Semgrep.cors-allows-all-origins: CORS is configured with no origin restrictions. Any third-party website can make requests to this API. Restrict  your frontend. origin: ```CORS(app, origins=["https://yourdomain.com"])```
+- Semgrep.cors-allows-all-origins: CORS is configured with no origin restrictions. Any third-party website can make requests to this API. Restrict  your frontend. origin: ```CORS(app, origins=["https://yourdomain.com"])``` Found in /backend2/app.py.
 
       15| CORS(app)
   
-- python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host: Running flask app with host 0.0.0.0 could expose server publicly
+- python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host: Running flask app with host 0.0.0.0 could expose server publicly. Found in /backend2/app.py.
   
       46| app.run(host="0.0.0.0", port = 5000, debug=True)
   
-- python.flask.security.audit.debug-enabled.debug-enabled: Detected Flask app with debug=True. Do not deploy production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.
+- python.flask.security.audit.debug-enabled.debug-enabled: Detected Flask app with debug=True. Do not deploy production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables. Found in /backend2/app.py.
   
       46| app.run(host="0.0.0.0", port = 5000, debug=True)
 
@@ -199,6 +199,21 @@ Here is the /backend2/app.py file after the changes and /backend/init_db.py .
 1. Models and Routes Fail
 2. Models and Routes Success
 
+The vulnerabilities returned by the semgrep scan regarding the backend models and routes all highlighted the insecure storage and comparison of user authentication information. Here are those vulnerabilities:
+
+- semgrep.password-stored-as-plain-string: Password is stored as an unhashed string. Use a password hashing library to hash before storage. Found in /backend2/models2.py.
+
+      10| password = db.Column(db.String(100), unique=False, nullable=False)  
+
+- semgrep.raw-password-from-request: Password is taken directly from the request and passed unhashed into a model constructor. Hash the password before storing it. /backend2/routes.py.
+  
+- semgrep.password-compared-via-query: Password is compared by passing it directly into a database query. Replace by fetching the username only then verify the password using a hash comparison. /backend2/routes.py.
+
+      68| user = User.query.filter_by(user_name=user_name, ***
+
+In order to resolve these vulnerabilities, scenarios in which passwords are either stored or compared must be replaced with hash values of those passwords instead. Here are the steps that I took for remediation:
+
+1. The first step I took was, in /backend
 
 ![SPD-Semgrep-Models-Fail.png](/Documentation/SPD-Semgrep-Models-Fail.png)
 ![SPD-Semgrep-Models-Success.png](/Documentation/SPD-Semgrep-Models-Success.png)
@@ -216,7 +231,7 @@ ________________________________________________________________________________
 - Raw password in request
 - Password is compared by passing it through a query
 
- ______________________________________________________________________________________________________________________________________________________________________________________
+ ________________________________________________________________________________________________________________________________________________________________________
 ***Dockerfiles***
 
 Frontend Docker Changes
