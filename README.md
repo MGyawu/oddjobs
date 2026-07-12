@@ -196,9 +196,6 @@ Here is the /backend2/app.py file after the changes and /backend/init_db.py .
 
 ***Backend functions and storage remediation***
 
-1. Models and Routes Fail
-2. Models and Routes Success
-
 The vulnerabilities returned by the semgrep scan regarding the backend models and routes all highlighted the insecure storage and comparison of user authentication information. Here are those vulnerabilities:
 
 - semgrep.password-stored-as-plain-string: Password is stored as an unhashed string. Use a password hashing library to hash before storage. Found in /backend2/models2.py.
@@ -213,15 +210,62 @@ The vulnerabilities returned by the semgrep scan regarding the backend models an
 
 In order to resolve these vulnerabilities, scenarios in which passwords are either stored or compared must be replaced with hash values of those passwords instead. Here are the steps that I took for remediation:
 
-1. The first step I took was, in /backend
+1. The first step I took was, in /backend/models2.py . Here I changed:
+
+       10| password = db.Column(db.String(100), unique=False, nullable=False)
+to:
+
+       10| password_hash = db.Column(db.String(512), unique=False, nullable=False)
+
+In the User class constructor. I also removed this from the User class's to_json() function:
+
+        20| "password" : self.password,
+
+These changes do not remediate the issue of plain-text password storage alone. That will be completed through the changes in /backend2/main.py . However, they do ensure that the semgrep scan does not return semgrep.password-stored-as-plain-string as a vulnerability, and it ensures that any call using the User.to_json() method does not return the password. That way the password of users cannot be returned when their other information is used in other functions.
+
+Here is /backend2/models2.py before the remediations:
 
 ![SPD-Semgrep-Models-Fail.png](/Documentation/SPD-Semgrep-Models-Fail.png)
+
+Here is /backend2/models2.py after the remediations:
+
 ![SPD-Semgrep-Models-Success.png](/Documentation/SPD-Semgrep-Models-Success.png)
 ______________________________________________________________________________________________________________________________________________________________________
+
+2. The next set of changes I am looking to make is in the /backend2/routes.py . These changes will address the semgrep.raw-password-from-request and semgrep.password-compared-via-query vulnerabilities returned in the semgrep scan. The first step was to import a password hash generating library. For that I imported ```generate_password_hash``` and ```check_password_hash``` from the ```werkzeug.security``` library:
+
+Before:
+
 ![SPD-Semgrep-Routes-Fail-1.png](/Documentation/SPD-Semgrep-Routes-Fail-1.png)
+
+After:
+
 ![SPD-Semgrep-Routes-Success-1.png](/Documentation/SPD-Semgrep-Routes-Success-1.png)
-______________________________________________________________________________________________________________________________________________________________________
+
+Afterward, in order to address the semgrep.raw-password-from-request vulnerability, I made these changes to the create_user() function:
+
+    33| password = request.json.get("password")
+
+to
+
+    33| raw_password = request.json.get("password")
+
+and
+
+    50| new_user = User(userid=userid, user_name=user_name, password=password, first_name=first_name, last_name=last_name, email=email)
+
+to
+
+    50| new_user = User(userid=userid, user_name=user_name, password_hash=generate_password_hash(raw_password), first_name=first_name, last_name=last_name, email=email)
+
+These changes ensure that when a new user is created and stored, a hash is generated for the password that the user has entered and is stored as opposed to the the actual password itself.
+
+Here is the create_user() function before the remediation:
+
 ![SPD-Semgrep-Routes-Fail-2.png](/Documentation/SPD-Semgrep-Routes-Fail-2.png)
+
+Here is the create_user() function after the remediation:
+
 ![SPD-Semgrep-Routes-Success-2.png](/Documentation/SPD-Semgrep-Routes-Success-2.png)
 _______________________________________________________________________________________________________________________________________________________________________
 ![SPD-Semgrep-Routes-Fail-3.png](/Documentation/SPD-Semgrep-Routes-Fail-3.png)
@@ -232,17 +276,6 @@ ________________________________________________________________________________
 - Password is compared by passing it through a query
 
  ________________________________________________________________________________________________________________________________________________________________________
-***Dockerfiles***
-
-Frontend Docker Changes
-
-![SPD-FrontendDocker-Fail.png](/Documentation/SPD-FrontendDocker-Fail.png)
-![SPD-FrontendDocker-Success.png](/Documentation/SPD-FrontendDocker-Success.png)
-
-Backend Docker Changes
-
-![SPD-BackendDocker-Fail.png](/Documentation/SPD-BackendDocker-Fail.png)
-![SPD-BackendDocker-Success.png](/Documentation/SPD-BackendDocker-Success.png)
 
 ______________________________________________________________________________________________________________________________________________________________________________________
 
