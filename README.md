@@ -230,7 +230,6 @@ Here is /backend2/models2.py before the remediations:
 Here is /backend2/models2.py after the remediations:
 
 ![SPD-Semgrep-Models-Success.png](/Documentation/SPD-Semgrep-Models-Success.png)
-______________________________________________________________________________________________________________________________________________________________________
 
 2. The next set of changes I am looking to make is in the /backend2/routes.py . These changes will address the semgrep.raw-password-from-request and semgrep.password-compared-via-query vulnerabilities returned in the semgrep scan. The first step was to import a password hash generating library. For that I imported ```generate_password_hash``` and ```check_password_hash``` from the ```werkzeug.security``` library:
 
@@ -268,14 +267,34 @@ Here is the create_user() function after the remediation:
 
 ![SPD-Semgrep-Routes-Success-2.png](/Documentation/SPD-Semgrep-Routes-Success-2.png)
 _______________________________________________________________________________________________________________________________________________________________________
+
+3. The next change to be made will address the semgrep.password-compared-via-query vulnerability found on the semgrep scan. In order to address this vulnerability, I went tot he authenticate_login() function of /backend2/routes.py and made these changes:
+
+       63| password = request.json.get("password")
+
+to
+
+       63| raw_password = request.json.get("password")
+And
+
+       68| user = User.query.filter_by(user_name=user_name, password=password).first()
+       69| if not user:
+       70|     return jsonify({"message": "Invalid Username or Password"}), 401
+to
+
+       68| user = User.query.filter_by(user_name=user_name).first()
+       69| if not user or not check_password_hash(user.password_hash, raw_password):
+       70|     return jsonify({"message": "Invalid Username or Password"}), 401
+
+These changes ensure that when a user attempts to authenticate, as opposed to comparing the raw password, a password hash is generated and then compared to the existing one (assuming the user actually existed beforehand). This directly addresses the issue brought by the semgrep.password-compared-via-query vulnerability.
+
+Here is authenticate_login() in /backend2/routes.py before the remediations:
+
 ![SPD-Semgrep-Routes-Fail-3.png](/Documentation/SPD-Semgrep-Routes-Fail-3.png)
+
+Here is authenticate_login() in /backend2/routes.py after the remediations:
+
 ![SPD-Semgrep-Routes-Success-3.png](/Documentation/SPD-Semgrep-Routes-Success-3.png)
-
-- Password Stored as plain text
-- Raw password in request
-- Password is compared by passing it through a query
-
- ________________________________________________________________________________________________________________________________________________________________________
 
 ______________________________________________________________________________________________________________________________________________________________________________________
 
