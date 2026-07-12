@@ -483,5 +483,3 @@ For this, I needed to add ```ignore-unfixed: true``` before the exit code under 
                     exit-code: '1'
 
 This means that these vulnerabilities, while there is still no known fix, will not stop the scan from failing. However, in future scans, once a vulnerability has a fix, an update cannot be made to the web application without addressing those vulnerabilities.
-
-### Frontend Could Not Access Backend After Initial Deployment
