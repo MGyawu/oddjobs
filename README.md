@@ -123,6 +123,8 @@ ________________________________________________________________________________
 
 In the Semgrep scan, one of the failures stated that there was no user outside of root for each container, meaning if an attacker were to attack the website, they would be doing so with root privileges. So the way to solve this issue would be to create another user, give that user appropriate privileges, and ensure that user is needed to run the starting commands without being the root user.
 
+- dockerfile.security.missing-user.missing-user: By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Found in both /frontend/Dockerfile and /backend2/Dockerfile
+
 Here are the changes to the frontend dockerfile:
 
 Before
@@ -133,7 +135,27 @@ After
 
 ![SPD-FrontendDocker-Success.png](/Documentation/SPD-FrontendDocker-Success.png)
 
-As for the backend dockerfile we created another user as well, but that was not the only change necessary. The majority of the trivy python and environment issues came from using an outdated python base image and with outdated libraries. In addition to that, there was no prior initialization of a database before running the app, and the command in the backend dockerfile for running the app ```CMD ["python", "app.py"]``` is typically used for local/dev environment testing and not production. This means needing to make use of the latest version of Gunicorn was necessary. Gunicorn was already present, but at this time it was not used, so I decided to update it in the requirements.txt, and write a new command for running the backend app.
+As for the backend dockerfile we created another user as well, but that was not the only change necessary. The majority of the trivy python and environment issues came from using an outdated python base image and with outdated libraries. As a result I made these changes to ensure to update the image and libraries:
+
+    2| FROM python:3.10-slim
+
+to
+
+    2| FROM python:3.14-slim-bookworm
+
+And I added this:
+
+    #Update Debian packages
+    RUN apt-get update && apt-get upgrade -y \
+        && rm -rf /var/lib/apt/lists/*
+    
+    #Update Python package and tooling
+    RUN pip install --no-cache-dir --upgrade \
+        pip setuptools wheel
+
+In addition to that, there was no prior initialization of a database before running the app, and the command in the backend dockerfile for running the app ```CMD ["python", "app.py"]``` is typically used for local/dev environment testing and not production. This means needing to make use of the latest version of Gunicorn was necessary. Gunicorn was already present, but at this time it was not used, so I decided to update it in the requirements.txt, and write a new command for running the backend app.
+
+    CMD ["/bin/sh", "-c", "python init_db.py && exec gunicorn --bind 0.0.0.0:5000 'app:create_app()'"]
 
 Here are the changes to requirements.txt:
 
