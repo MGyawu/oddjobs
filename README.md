@@ -296,7 +296,6 @@ Here is authenticate_login() in /backend2/routes.py after the remediations:
 
 ![SPD-Semgrep-Routes-Success-3.png](/Documentation/SPD-Semgrep-Routes-Success-3.png)
 
-______________________________________________________________________________________________________________________________________________________________________________________
 
 ***Nginx***
 
@@ -327,13 +326,30 @@ This is docker-compose.yml with the backend service highlighted:
 
 ### Successful Scan
 
+Now that I have completed all of the remediations and pushed to my feature branch. I create a pull request to merge these changes into main, and here are the results of the scan for the pull request:
+
 ![SPD-SuccessfulPullRequestScan.png](/Documentation/SPD-SuccessfulPullRequestScan.png)
+
+Because all of the scans passed after creating the pull request, it is not time to merge and deploy to my EC2 instance.
 
 ## Completed Deployment
 
+Due to the Deploy workflow, merging with main automatically triggered deployment. Here is the outcome:
+
 ![SPD-Deployed.png](/Documentation/SPD-Deployed.png)
+
+Now that my web application is deployed, here is a look at a few of the pages on the website.
+
+User creation (the first page you see when you access the website:
+
 ![SPD-Website1.png](/Documentation/SPD-Website1.png)
+
+Job creation:
+
 ![SPD-Website2.png](/Documentation/SPD-Website2.png)
+
+The Job List page to see where posr jobs would be presented:
+
 ![SPD-Website3.png](/Documentation/SPD-Website3.png)
 
 ## Issues and Troubleshooting
