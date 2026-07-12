@@ -353,3 +353,135 @@ The Job List page to see where posr jobs would be presented:
 ![SPD-Website3.png](/Documentation/SPD-Website3.png)
 
 ## Issues and Troubleshooting
+
+Here are a number of issues that I ran into while trying to complete this project:
+
+### Semgrep Scanning for OWASP Top 10 Vulnerabilities and Rules
+
+Here is a list of some of the vulnerabilities returned by the Semgrep scan:
+
+1. cors-allows-all-origins
+2. password-stored-as-plain-string
+3. password-compared-via-query
+4. raw-password-from-request
+
+These vulnerabilities are all examples of certain vulnerabilities found on the OWASP Top 10 2025 edition. Number 1 on the list is specifically an example of Broken Access Control (which is number 1 on this list at this time) while the rest are examples of Cryptographic Failures (number 4 on the OWASP Top 10 list). In the Semgrep workflow, found at /.github/semgrep.yml, I added the ```--config p/owasp-top-ten``` to the job that ran Semgrep in an attempt to catch these vulnerabilities.
+
+    jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+
+            - name: Run Semgrep
+              run: |
+                echo "" > .semgrepignore
+                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --error
+
+However, during earlier scan attempts, these vulnerabilities were not present in the scan output. As a result, I wrote this set of rules stored in /.semgrep/rules.yml, and rewrote the run semgrep command including ```--config .semgrep/```.
+
+    jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+
+            - name: Run Semgrep
+              run: |
+                echo "" > .semgrepignore
+                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --config .semgrep/ --error
+
+
+### Trivy Scans Reporting Vulnerabilities for Which There is no Remediation
+
+After remediating the vulnerabilities found in the Trivy that had fixed versions, I had pushed to my feature branch and created a pull request. However, the Trivy scans would continue to fail due to identified vulnerabilities that do not have a confirmed or specified fixed version because they were the latest versions. As a result, I could not merge to main. In actual enterprise environments, the next step from here would require a risk assessment. That assessment would result in either continuing to push forward with the merge, finding some for of remediation, or finding some other course of action. In this scenario, I chose to accept the risk due to the fact that those without a fix were the latest version. In order to do this I took a look at the jobs in the Trivy workflow, found at /.github/trivy.yml .
+
+    jobs:
+        trivy-backend:
+            runs-on: ubuntu-latest
+    
+            steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v4
+    
+                - name: Build Backend Image
+                  run: docker build -t backend-image ./backend2
+    
+                - name: Scan Backend Image
+                  uses: aquasecurity/trivy-action@master
+                  with:
+                    image-ref: backend-image
+                    severity: HIGH,CRITICAL
+                    ignore-unfixed: true
+                    exit-code: '1'
+        trivy-frontend:
+            runs-on: ubuntu-latest
+    
+            steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v4
+    
+                - name: Build Frontend Image
+                  run: docker build --target production -t frontend-image ./frontend
+    
+                - name: Scan frontend image
+                  uses: aquasecurity/trivy-action@master
+                  with:
+                    image-ref: frontend-image
+                    severity: HIGH,CRITICAL
+                    ignore-unfixed: true
+                    exit-code: '1'
+
+For this, I needed to add ```ignore-unfixed: true``` before the exit code under each job. That way, once high or critical vulnerabilities are found, before an exit code of 1 (which means failure) is returned the vulnerabilities without a fix would be ignored.
+
+    jobs:
+        trivy-backend:
+            runs-on: ubuntu-latest
+    
+            steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v4
+    
+                - name: Build Backend Image
+                  run: docker build -t backend-image ./backend2
+    
+                - name: Scan Backend Image
+                  uses: aquasecurity/trivy-action@master
+                  with:
+                    image-ref: backend-image
+                    severity: HIGH,CRITICAL
+                    ignore-unfixed: true
+                    exit-code: '1'
+        trivy-frontend:
+            runs-on: ubuntu-latest
+    
+            steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v4
+    
+                - name: Build Frontend Image
+                  run: docker build --target production -t frontend-image ./frontend
+    
+                - name: Scan frontend image
+                  uses: aquasecurity/trivy-action@master
+                  with:
+                    image-ref: frontend-image
+                    severity: HIGH,CRITICAL
+                    ignore-unfixed: true
+                    exit-code: '1'
+
+This means that these vulnerabilities, while there is still no known fix, will not stop the scan from failing. However, in future scans, once a vulnerability has a fix, an update cannot be made to the web application without addressing those vulnerabilities.
+
+### Frontend Could Not Access Backend After Initial Deployment
