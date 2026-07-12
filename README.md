@@ -304,14 +304,25 @@ ________________________________________________________________________________
 - running backend dockerfile using gunicorn
 - Nginx change
 
+The last vulnerability in the Semgrep scan to address was this vulnerability:
+
+- generic.nginx.security.request-host-used.request-host-used: '$http_host' and '$host' variables may contain a malicious value from attacker controlled 'Host' request heeader. Use an explicitly configured host value or a a allow list for validation. Found in /frontend/nginx.conf
+
+        6| proxy_set_header Host $host;
+
+This effectively means that because I did not specify a value for the host variable $host, that this variable could be a malicious controlled host from an attacker. Due to the fact that nginx.conf governs how API requests are sent to the backend server, I replaced ```$host``` with ```backend```, which resolves to the backend service specified in the docker-compose.yml file of the repo.
+
+This is /frontend/nginx.conf before the remediation:
+
 ![SPD-Semgrep-Nginx-Fail.png](/Documentation/SPD-Semgrep-Nginx-Fail.png)
+
+This is /frontend/nginx.conf after the remediation:
+
 ![SPD-Semgrep-Nginx-Success.png](/Documentation/SPD-Semgrep-Nginx-Success.png)
 
+This is docker-compose.yml with the backend service highlighted:
 
-
-#### Semgrep Vulnerabilities
-#### Trivy Vulnerabilities
-
+![SPD-DockerCompose.p](/Documentation/SPD-DockerCompose.png)
 
 
 ### Successful Scan
