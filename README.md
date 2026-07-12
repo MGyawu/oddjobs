@@ -213,7 +213,7 @@ In order to resolve these vulnerabilities, scenarios in which passwords are eith
 1. The first step I took was, in /backend/models2.py . Here I changed:
 
        10| password = db.Column(db.String(100), unique=False, nullable=False)
-to:
+    to:
 
        10| password_hash = db.Column(db.String(512), unique=False, nullable=False)
 
