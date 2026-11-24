@@ -19,6 +19,21 @@ jobs:
             - name: Build Backend Image
               run: docker build -t backend-image ./backend2
 
+            - name: Trivy report for Risk Runner
+              uses: aquasecurity/trivy-action@v0.36.0
+              with:
+                image-ref: backend-image
+                format: json
+                output: trivy-backend.json
+                exit-code: '0'
+
+            - name: Upload to Risk Runner
+              uses: MGyawu/Risk-Runner/action@main
+              with:
+                server-url: ${{ secrets.RISK_RUNNER_URL }}
+                token: ${{ secrets.RISK_RUNNER_TOKEN }}
+                report: trivy-backend.json
+
             - name: Scan Backend Image
               uses: aquasecurity/trivy-action@master
               with:
@@ -35,6 +50,21 @@ jobs:
 
             - name: Build Frontend Image
               run: docker build --target production -t frontend-image ./frontend
+
+            - name: Trivy report for Risk Runner
+              uses: aquasecurity/trivy-action@v0.36.0
+              with:
+                image-ref: frontend-image
+                format: json
+                output: trivy-frontend.json
+                exit-code: '0'
+
+            - name: Upload to Risk Runner
+              uses: MGyawu/Risk-Runner/action@main
+              with:
+                server-url: ${{ secrets.RISK_RUNNER_URL }}
+                token: ${{ secrets.RISK_RUNNER_TOKEN }}
+                report: trivy-frontend.json
 
             - name: Scan frontend image
               uses: aquasecurity/trivy-action@master

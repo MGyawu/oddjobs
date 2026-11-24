@@ -1,26 +1,30 @@
 name: Semgrep Scan
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    semgrep:
-        runs-on: ubuntu-latest
-        container:
-            image: semgrep/semgrep
-
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-
-            - name: Run Semgrep
-              run: |
-                echo "" > .semgrepignore
-                semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --config .semgrep/ --error
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install semgrep
+      - name: Run Semgrep
+        run: |
+          echo "" > .semgrepignore
+          semgrep scan --config p/python --config p/javascript --config p/owasp-top-ten --config .semgrep/ \
+            --sarif --output semgrep.sarif --metrics off --error
+      - name: Upload to Risk Runner
+        if: always()
+        uses: MGyawu/Risk-Runner/action@main
+        with:
+          server-url: ${{ secrets.RISK_RUNNER_URL }}
+          token: ${{ secrets.RISK_RUNNER_TOKEN }}
+          report: semgrep.sarif
+          scan-type: sast
